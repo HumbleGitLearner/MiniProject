@@ -1,0 +1,72 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-primary" fixed-top fxLayout="row" fxLayoutAlign="space-between center">
+  <div class="container-fluid">
+    <div>
+      <button class="navbar-toggler hidden-sm-up" type="button" (click)="true" data-target="#navbarsDefault" aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div [ngbCollapse]="true" class="collapse navbar-collapse" id="navbarsDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item dropdown" ngbDropdown> 
+            <button class="nav-link" id="id01" href="#" ngbDropdownToggle><span class="navbar-toggler-icon"></span></button>
+            <div class="dropdown-menu" aria-labelledby="id01" ngbDropdownMenu>
+              <a class="dropdown-item" href="/setting">Setting</a>
+              <a class="dropdown-item" (click)="open(demoModal)">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="mx-auto fs-4"> Personal Expenses Tracker</div>
+    
+    <div>
+      <a class="navbar-text" href="/login"><i class="bi bi-box-arrow-in-right fs-3"></i>&nbsp;Login</a>&nbsp;&nbsp;
+      <a class="navbar-text" href="/newuser"><i class="bi bi-person-plus-fill fs-3"></i>&nbsp;New User</a>
+    </div>
+  </div>
+</nav>
+    <ul ngbNav class="nav-tabs bg-primary-subtle">
+      <li ngbNavItem="/">
+        <a ngbNavLink routerLink="/">Home</a>
+      </li>
+      <li class="nav-item">
+      <li ngbNavItem="/camera">
+
+        <a ngbNavLink routerLink="/camera">New Expense(Camera)</a>
+      </li>
+      <li ngbNavItem="/manual">
+
+        <a ngbNavLink routerLink="/manual">New Expense(Manual)</a>
+      </li>
+      <li ngbNavItem="/select">
+
+        <a ngbNavLink routerLink="/select">New Expense(Select Image)</a>
+      </li>
+      <li ngbNavItem="/reports">
+
+        <a ngbNavLink routerLink="/reports">Reports</a>
+      </li>
+    </ul>
+  <br>
+  <router-outlet></router-outlet> 
+
+  <ng-template #demoModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <label for="dateOfBirth">Date of birth</label>
+        <div class="input-group">
+          <input id="dateOfBirth" name="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" ngbDatepicker #dp="ngbDatepicker">
+          <button type="button" class="btn btn-outline-secondary bi bi-calendar" (click)="dp.toggle()"></button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+  </div>
+</ng-template>

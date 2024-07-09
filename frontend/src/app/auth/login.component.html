@@ -1,0 +1,86 @@
+<div class="login-container">
+  <img src="assets/pem.svg" alt="Logo">
+  <h1 class="loginhead">Personal Expenses Manager</h1>
+  <br>
+  <mat-card>
+    <mat-card-title>Signing In</mat-card-title>
+    <mat-card-content>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <!-- <div class="header">Signing In</div>  
+      <br> -->
+      <div class="form-field-wrapper">
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            type="email"
+            id="email"
+            placeholder="Ex. bill@example.com"
+            autocomplete="off"
+            formControlName="email"
+            required
+          />      
+          <mat-error *ngIf="lform['email'].touched && lform['email'].hasError('required')">Email is <strong>required</strong></mat-error>
+          <mat-error *ngIf="lform['email'].touched && lform['email'].hasError('email')">Please enter a valid email address</mat-error>
+        </mat-form-field>
+      </div>    
+      <div class="form-field-wrapper">
+        <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            type="password"
+            id="password"
+            placeholder="Password"
+            autocomplete="off"
+            formControlName="password"
+            required
+          />
+          @if (lform['password'].touched && lform['password'].hasError('required')) {
+            <mat-error>Password is <strong>required</strong></mat-error>}
+        </mat-form-field>
+      </div>
+      <!-- <div *ngIf="lform['password'].invalid && lform['password'].touched">
+        <p class="error-message">Password is required</p>
+      </div> -->
+
+      <div class="recoverAction">
+          <a routerLink="/recover">Forgot your password?</a>
+      </div>
+
+      <div class="actions">
+        <button
+          mat-stroked-button
+          color="primary"
+          type="submit"
+          [disabled]="!loginForm.valid"
+        >Login</button>
+        <!-- type="button" -->
+        <!-- (click)="login()" -->
+        <div class="login-separator">
+          <span>OR</span>
+        </div>
+        
+        <div id="g_id_onload"
+          data-client_id="1051547955059-l6pqra67v49m9pbvbjl7e5hhagshhqf3.apps.googleusercontent.com"
+          data-context="signin"
+          data-ux_mode="popup"
+          data-login_uri="localhost:4200"
+          data-auto_prompt="false">
+        </div>
+        
+        <div class="g_id_signin"
+          data-type="standard"
+          data-shape="rectangular"
+          data-theme="outline"
+          data-text="signin_with"
+          data-size="large"
+          data-logo_alignment="left">
+        </div>
+      </div>
+      <br>
+      <h3>Don't have an account yet?&nbsp;&nbsp;<a routerLink="/signup">Create one now!</a></h3>
+    </form>
+  </mat-card-content>
+  </mat-card>
+</div>

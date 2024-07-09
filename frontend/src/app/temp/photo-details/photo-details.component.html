@@ -1,0 +1,35 @@
+<p>photo-details works!</p>
+
+<div class="container">
+    <div>
+        <h1>Photo Details</h1>
+        <hr>
+        <br>
+        <div>
+            <label>TiTle</label>
+            &nbsp;&nbsp;
+            <label> {{ photo?.firstName}}</label>
+        </div>
+        <div>
+            <label>Comment</label>
+            &nbsp;&nbsp;
+            <label> {{ photo?.lastName}}</label>
+        </div>
+
+        <div>
+            <label>Email</label>
+            &nbsp;&nbsp;
+            <label> {{ photo?.email}}</label>
+        </div>
+        <div>
+            <label>Profile URL Image</label>
+            &nbsp;&nbsp;
+            <label> {{ photo?.profileURL}}</label>
+            <!-- <img src=`${photo?.profileUrl}` size="100" /> -->
+        </div>
+    </div>
+    <br><br>
+    <div>
+        <button class="btn btn-success" (click)="backToList()">Photos</button>
+    </div>
+</div>

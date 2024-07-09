@@ -1,0 +1,58 @@
+<p>create-photo works!</p>
+<div class="container">
+    <div class="row">
+        <h1>Create New Photo</h1>
+    </div>
+    <div class="row">
+        <form method="POST" [formGroup]="employeeForm" (ngSubmit)="submitSave()">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control" id="firstName" formControlName="firstName">
+            </div>
+            <div *ngIf="employeeForm.get('firstName')?.hasError('minlength')">Title cannot be shorter than 5 characters</div>
+
+                <div class="form-group">
+                <label>Comment</label>
+                <input type="text" class="form-control" id="lastName" formControlName="lastName">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" id="email" formControlName="email">
+            </div>
+            <div class="form-group">
+                <label for="file">File</label>
+                <input formControlName="file" id="file" type="file" class="form-control"
+                    (change)="onFileSelected($event)">
+                <h6>OR</h6>
+                <div>
+                    <h6>Take Photo</h6>
+                    <div mat-card-content fxLayout="column" fxLayoutAlign="center center">
+                    <div gdColumns="repeat(3, 48px)" gdGap="1rem">
+                        <webcam [width]="width" [height]="height" [trigger]="trigger"
+                        (imageCapture)="snapshot($event)" imageType="image/png"></webcam>
+                    </div>
+                <div>
+                <button mat-raised-button color="primary" type="button" (click)="snap()">Snap</button>
+            <!-- <button mat-raised-button color="primary" type="button" [routerLink]="['/upload']">Select Photo</button>
+            <button mat-raised-button color="primary" type="button" [routerLink]="['/image/2']">Get Photo</button> -->
+        </div>
+
+        <div *ngFor="let p of pics">
+            <img [src]="p" width="100"/>
+        </div>
+    </div>
+</div>
+
+
+
+
+                <!-- <button mat-raised-button color="primary" type="button" [routerLink]="['/camera']">Take Photo</button> -->
+                 <!-- <app-camera-component></app-camera-component> -->
+            </div>
+            <br>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" [disabled]="employeeForm.invalid">Create</button>
+            </div>
+        </form>
+    </div>
+</div>

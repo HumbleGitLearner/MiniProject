@@ -1,0 +1,39 @@
+ALTER TABLE your_table_name
+ADD CONSTRAINT fk_your_foreign_key_name
+FOREIGN KEY (your_foreign_key_column)
+REFERENCES referenced_table_name(referenced_column_name);
+
+#pg13, pg14 on day23.pdf
+constraint fk_prog_id
+foreign key(prog_id)
+references tv_shows(prog_id)
+on delete restrict
+on update restrict
+
+constraint fk_prog_id
+foreign key(prog_id)
+references tv_shows(prog_id)
+on delete set null
+on update restrict
+
+SELECT receipts.*, users.id as userId, users.name as userName FROM receipts
+JOIN users ON receipts.userId = users.id
+
+@Override
+public Receipt mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
+    Receipt receipt = new Receipt();
+    receipt.setId(rs.getInt("id"));
+    receipt.setUserId(rs.getInt("userId")); // Assuming you still want to keep this
+    receipt.setFileUrl(rs.getString("fileUrl"));
+    receipt.setUploadTime(rs.getTimestamp("uploadTime").toLocalDateTime());
+    receipt.setPayer(rs.getString("payer"));
+    receipt.setPayTime(rs.getTimestamp("payTime").toLocalDateTime());
+
+    // Map User details
+    User user = new User();
+    user.setId(rs.getInt("userId")); // Or another column name if aliased differently
+    user.setName(rs.getString("userName")); // Assuming 'userName' is selected in your query
+    receipt.setUser(user); // Set the User object in Receipt
+
+    return receipt;
+}

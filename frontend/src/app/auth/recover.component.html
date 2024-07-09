@@ -1,0 +1,53 @@
+<div class="login-container">
+  <img src="assets/pem.svg" alt="Logo">
+  <h1 class="loginhead">Personal Expenses Manager</h1>
+  <br>
+  <mat-card>
+    <mat-card-title>Recover Your Password</mat-card-title>
+    <mat-card-content>
+<!-- <ng-container *ngIf="!isRequestSent; else requestSent"> -->  
+  <!-- <div class="header">Recover your password</div> -->
+      <form [formGroup]="recoveryForm" (ngSubmit)="recovery()">
+        <mat-form-field>
+          <input
+            matInput
+            type="email"
+            id="recover_email"
+            placeholder="Email"
+            formControlName="email"
+            required
+          />
+          <mat-error *ngIf="recoverform['email'].touched && recoverform['email'].hasError('required')">Email is <strong>required</strong></mat-error>
+          <mat-error *ngIf="recoverform['email'].touched && recoverform['email'].hasError('email')">Please enter a valid email address</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>First Name</mat-label>
+          <input type="text" matInput placeholder="First Name" formControlName="firstname" required>
+          <mat-error *ngIf="this.recoverform['firstname']?.touched && this.recoverform['firstname']?.hasError('required')">
+            First Name is <strong>required</strong></mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Mother's maiden name or any secret number to recover password</mat-label>
+          <input
+            matInput
+            type="text"
+            placeholder="Secret code to recover password"
+            autocomplete="off"
+            formControlName="secret"
+            required
+          />
+          <mat-error *ngIf="recoverform['secret'].touched && recoverform['secret'].hasError('required')">Secret code is <strong>required</strong></mat-error>
+        </mat-form-field>
+
+        <div class="actions">
+          <button
+            mat-stroked-button
+            color="primary"
+            type="submit"
+            [disabled]="!recoveryForm.valid"
+          >Recover password</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
