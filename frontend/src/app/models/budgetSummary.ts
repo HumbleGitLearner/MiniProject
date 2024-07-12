@@ -1,4 +1,3 @@
-import { Id } from "./types";
 import { Period } from "./period";
 
 export class BudgetSummary {
@@ -8,7 +7,10 @@ export class BudgetSummary {
     return this.totalBudget - this.totalExpenses;
   }
 
-  constructor(public accountId: Id, public period: Period) {}
+  constructor(
+    public accountId: string | number | undefined,
+    public period: Period
+  ) {}
 
   static buildFromJson(json: any): BudgetSummary {
     const budgetSummary = new BudgetSummary(json.accountId, json.period);

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import nus.mini.backend.jdbcRepositories.S3Repo;
-import nus.mini.backend.models.User;
+import nus.mini.backend.models.UserData;
 
 @Service
 public class S3Service {
@@ -15,7 +15,7 @@ public class S3Service {
     @Autowired
     private S3Repo s3Repo;
 
-    public String upload(MultipartFile file, User user) throws IOException{
+    public String upload(MultipartFile file, UserData user) throws IOException{
   
         return s3Repo.saveToS3(file, String.valueOf(user.getId()));
     }
@@ -24,7 +24,7 @@ public class S3Service {
     // private AmazonS3 s3Client;
 
     // public String upload(MultipartFile file) throws IOException{
-    //     // User data
+    //     // UserData data
     //     Map<String, String> userData = new HashMap<>();
     //     userData.put("name", "kenneth");
     //     userData.put("uploadTime", new Date().toString());

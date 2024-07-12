@@ -19,7 +19,7 @@ import { Subscription, Observable } from "rxjs";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuItemDirective } from "../../services/menu-item.directive";
-import { AuthService } from "../../auth/services/auth.service";
+import { AuthService } from "../../services/auth.service";
 import { MatDialog } from '@angular/material/dialog';
 import { LogoutDialogComponent } from './logout.component';
 
@@ -28,13 +28,15 @@ import { LogoutDialogComponent } from './logout.component';
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
 })
-export class LayoutComponent implements AfterViewInit, OnDestroy {
+export class LayoutComponent implements AfterViewInit//, OnDestroy
+{
   @ViewChildren(MenuItemDirective)
-  private buttons!: QueryList<MenuItemDirective>;
-  private routerSub: Subscription;
+  //private buttons!: QueryList<MenuItemDirective>;
+  //private routerSub: Subscription;
   public loadingRoute = false;
   public userEmail$: Observable<string | undefined>;
-  public selected!: string;
+  public uId: number | undefined;
+  //public selected!: string;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -87,42 +89,42 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
       sanitizer.bypassSecurityTrustResourceUrl('assets/remove.svg')
     );
 
-    this.routerSub = router.events.subscribe((e) => {
-      if (e instanceof NavigationStart || e instanceof ActivationStart) {
-        this.loadingRoute = true;
-      } else if (
-        e instanceof NavigationEnd ||
-        e instanceof NavigationError ||
-        e instanceof NavigationCancel
-      ) {
-        this.loadingRoute = false;
+    // this.routerSub = router.events.subscribe((e) => {
+    //   if (e instanceof NavigationStart || e instanceof ActivationStart) {
+    //     this.loadingRoute = true;
+    //   } else if (
+    //     e instanceof NavigationEnd ||
+    //     e instanceof NavigationError ||
+    //     e instanceof NavigationCancel
+    //   ) {
+    //     this.loadingRoute = false;
 
-        this.selectCurrentRoute();
-      }
-    });
+    //     this.selectCurrentRoute();
+    //   }
+    // });
 
     this.userEmail$ =
       this.authService.getUserFirstname$() !== undefined
         ? this.authService.getUserFirstname$()
         : this.authService.getUserEmail$();
+    
+    this.uId = 1;
   }
 
-  private selectCurrentRoute() {
-    this.select(this.location.path().split('/')[2]);
-  }
+ // private selectCurrentRoute() {
+ //   this.select(this.location.path().split('/')[2]);
+  // }
 
-  private select(name: string) {
-    if (this.buttons) {
-      this.buttons.forEach(
-        (button) => (button.isSelected = button.name === name)
-      );
-    }
-    this.selected = name;
-  }
+  // private select(name: string) {
+  //   if (this.buttons) {
+  //     this.buttons.forEach(
+  //       (button) => (button.isSelected = button.name === name)
+  //     );
+  //   }
+  //   this.selected = name;
+  // }
 
-  //HY
   logout() {
-
     const dialogRef = this.dialog.open(LogoutDialogComponent);
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
@@ -130,17 +132,17 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         this.authService.logout().subscribe(() => {
           this.router.navigate([this.authService.LOGIN_PATH]);
         });
-      } else { }
+      } else {
+      }
     });
-
   }
 
   ngAfterViewInit() {
-    this.selectCurrentRoute();
+    // this.selectCurrentRoute();
     this.cdr.detectChanges();
   }
 
-  ngOnDestroy() {
-    this.routerSub.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   this.routerSub.unsubscribe();
+  // }
 }

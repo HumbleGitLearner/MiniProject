@@ -16,7 +16,7 @@ public class UserDetails {
     private String username;
     private String password;
     private String token;
-    private String first_name;
+    private String given_name;
     private String last_name;
     private LocalDateTime lastMod;
     private LocalDateTime dateCreated;

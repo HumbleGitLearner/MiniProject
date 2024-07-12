@@ -1,8 +1,7 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { QrCodeModule } from "ng-qrcode";
 
-import { SharedModule } from "../../services/shared.module";
+import { SharedModule } from "../../services/materials.module";
 import { AccountComponent } from "./account.component";
 import { UserDialogComponent } from "./user-dialog.component";
 import { SecretDialogComponent } from "./secret-dialog.component";
@@ -11,7 +10,7 @@ import { UserApi } from "./user.api";
 import { SecretApi } from "./secret.api";
 
 @NgModule({
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, QrCodeModule],
+  imports: [SharedModule, ReactiveFormsModule, FormsModule],
   declarations: [AccountComponent, UserDialogComponent, SecretDialogComponent],
   providers: [AccountService, UserApi, SecretApi],
 })

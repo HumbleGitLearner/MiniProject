@@ -6,7 +6,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { Observable, of, throwError } from "rxjs";
 import { map, switchMap, catchError, tap, filter } from "rxjs/operators";
 
-import { AuthService } from "../../auth/services/auth.service";
+import { AuthService } from "../../services/auth.service";
 import { AccountService } from "./account.service";
 import { UserDialogComponent } from "./user-dialog.component";
 import { SecretDialogComponent } from "./secret-dialog.component";
@@ -38,9 +38,6 @@ export class AccountComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getCurrentUser$().subscribe((user) => {
       this.ownEmail = user!.email ?? '';
-      //delete
-      this.tfaEnabled = user!.tfa ?? false;
-      //      this.isAuth0 = this.authService.isAuth0User(user!);
     });
     // this.authService
     //   .getUserRole$()

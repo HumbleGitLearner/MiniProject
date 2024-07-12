@@ -27,13 +27,13 @@ public Receipt mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
     receipt.setFileUrl(rs.getString("fileUrl"));
     receipt.setUploadTime(rs.getTimestamp("uploadTime").toLocalDateTime());
     receipt.setPayer(rs.getString("payer"));
-    receipt.setPayTime(rs.getTimestamp("payTime").toLocalDateTime());
+    receipt.setTrxTime(rs.getTimestamp("trxTime").toLocalDateTime());
 
-    // Map User details
-    User user = new User();
+    // Map UserData details
+    UserData user = new UserData();
     user.setId(rs.getInt("userId")); // Or another column name if aliased differently
     user.setName(rs.getString("userName")); // Assuming 'userName' is selected in your query
-    receipt.setUser(user); // Set the User object in Receipt
+    receipt.setUser(user); // Set the UserData object in Receipt
 
     return receipt;
 }

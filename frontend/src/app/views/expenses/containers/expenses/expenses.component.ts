@@ -27,7 +27,7 @@ import {
 } from "../../components/expense-dialog/expense-dialog-component";
 import { ExpenseCategoriesService } from "../../services/expense-categories.service";
 import { ExpensesService } from "../../services/expenses.service";
-import { AuthService } from "../../../../auth/services/auth.service";
+import { AuthService } from "../../../../services/auth.service";
 import { PeriodService } from "../../../../services/period.service";
 import { SnackBarComponent } from "../../../../services/snackbar.component";
 import { Expense } from "../../../../models/expense";

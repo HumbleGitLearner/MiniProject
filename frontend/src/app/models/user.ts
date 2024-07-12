@@ -1,35 +1,24 @@
-import { Account } from "./account";
-import { Role } from "./types";
+//import { Account } from "./account";
 
 export class User {
-  id!: string;
-
-  accountId?: string;
-  account?: Account;
+  id?: number | null;
+  // accountId?: string;
+  // account?: Account;
 
   email?: string; //for login name
   password?: string;
-  token?: string;
+  token?: string | null;
   secret?: string;
-  first_name?: string;
-  last_name?: string;
+  givenName?: string;
+  lastName?: string;
+  lastMod?: string;
   loginType?: string; //LOCAL, GOOGLE, GITHUB, HOTMAIL
 
   mobile?: string; //for telegram
-  lastMod?: string;
-
-  notif_telegram?: boolean;
-  notif_email?: boolean;
-  scan_email?: boolean;
-  exp?: string;
-
-  //description?: StorageManager;
-
+  notifTelegram?: boolean | null;
+  notifEmail?: boolean | null;
+  scanEmail?: boolean | null;
+  exp?: number;
   iat?: string;
   iss?: string;
-
-//  role!: Role;
-  confirmed?: boolean;
-  //delete
-  tfa?: boolean;
 }

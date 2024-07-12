@@ -3,8 +3,8 @@
       <p>Are you sure you want to log out?</p>
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-button (click)="cancelLogout()">Cancel</button>
-      <button mat-button color="primary" (click)="confirmLogout()">
+      <button mat-button mat-dialog-close (click)="cancelLogout()">Cancel</button>
+      <button mat-button mat-dialog-close cdkFocusInitia (click)="confirmLogout()">
         Yes, Log Out
       </button>
     </mat-dialog-actions>

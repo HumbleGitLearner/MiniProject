@@ -5,8 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -32,18 +35,19 @@ public class ReceiptRepository{
 
     final String FIND_ALL_RECEIPTS="SELECT * from receipts";
     final String FIND_RECEIPT_BY_ID="SELECT * from receipts where receipts.id =?";
+    final String FIND_RECEIPTS_BY_USER="SELECT * from receipts where receipts.user_id =?";   
     final String INSERT_RECEIPT= """
-           INSERT INTO receipts (userId, fileUrl, uploadTime, payer, payTime,
-            total, category, platform, merchant, consumer, paymentType) 
+           INSERT INTO receipts (user_id, file_url, upload_time, payer, trx_time,
+            total, category, platform, merchant, consumer, payment_type) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """;
     final String UPDATE_RECEIPT ="""
-           UPDATE receipts SET userId=?, fileUrl=?, uploadTime=?, payer=?, payTime=?, total=?, 
-            category=?, platform=?, merchant=?, consumer=?, paymentType=? WHERE id=?
+           UPDATE receipts SET user_id=?, file_url=?, upload_time=?, payer=?, trx_time=?, total=?, 
+            category=?, platform=?, merchant=?, consumer=?, payment_type=? WHERE id=?
      """;
     final String DELETE_RECEIPT= "delete from receipts where id=?";
 
-    public int save(@Valid Receipt receipt){
+    public int save(@Valid Receipt receipt)throws DataAccessException, SQLException{
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(new PreparedStatementCreator(){
             @SuppressWarnings("null")
@@ -55,7 +59,7 @@ public class ReceiptRepository{
                 pst.setString(2, receipt.getFileUrl());
                 pst.setTimestamp(3,Timestamp.valueOf(receipt.getUploadTime()));
                 pst.setString(4, receipt.getPayer());
-                pst.setTimestamp(5, Timestamp.valueOf(receipt.getPayTime()));
+                pst.setTimestamp(5, Timestamp.valueOf(receipt.getTrxTime()));
                 pst.setBigDecimal(6, receipt.getTotal());
                 pst.setString(7, receipt.getCategory().toString());
                 pst.setString(8, receipt.getPlatform().toString());
@@ -82,7 +86,7 @@ public class ReceiptRepository{
         // return bSaved;
     }
 
-    public int update(Receipt receipt){
+    public int update(Receipt receipt) throws  DataAccessException, SQLException{
         int iUpdated=0;
         PreparedStatementSetter pss = new PreparedStatementSetter(){
             @Override
@@ -91,7 +95,7 @@ public class ReceiptRepository{
                 pst.setString(2, receipt.getFileUrl());
                 pst.setTimestamp(3,Timestamp.valueOf(receipt.getUploadTime()));
                 pst.setString(4, receipt.getPayer());
-                pst.setTimestamp(5, Timestamp.valueOf(receipt.getPayTime()));
+                pst.setTimestamp(5, Timestamp.valueOf(receipt.getTrxTime()));
                 pst.setBigDecimal(6, receipt.getTotal());
                 pst.setString(7, receipt.getCategory().toString());
                 pst.setString(8, receipt.getPlatform().toString());
@@ -105,16 +109,36 @@ public class ReceiptRepository{
         return iUpdated;
     }
 
-    public int delete(Integer id){
-        return jdbcTemplate.update(DELETE_RECEIPT, id);
+    public int delete(Integer id) throws DataAccessException, SQLException{
+        int result=0;
+        try{
+            result= jdbcTemplate.update(DELETE_RECEIPT, id);
+        } catch (EmptyResultDataAccessException ex){
+            result=0 ;
+        }
+        return result;
     }
 
 
-    public Receipt findById(Integer id){
-        return jdbcTemplate.queryForObject(FIND_RECEIPT_BY_ID, rowMapper, id);
+    public Optional<Receipt> findById(Integer id) throws DataAccessException, SQLException{
+        try{
+            Receipt receipt = jdbcTemplate.queryForObject(FIND_RECEIPT_BY_ID, rowMapper, id);
+            return Optional.ofNullable(receipt);
+        } catch (EmptyResultDataAccessException ex){
+            return Optional.empty();
+        }   
+    }    
+
+    public Optional<Receipt> findByUser(int user) throws DataAccessException, SQLException{
+        try {
+            Receipt receipt = jdbcTemplate.queryForObject(FIND_RECEIPTS_BY_USER, rowMapper, user);
+            return Optional.ofNullable(receipt);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }    
     }
 
-    public List<Receipt>findAll(){
+    public List<Receipt>findAll() throws DataAccessException, SQLException{
         return jdbcTemplate.query(FIND_ALL_RECEIPTS, rowMapper);
     }
    

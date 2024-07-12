@@ -1,0 +1,118 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+.profile-container {
+  text-align: center;
+  width: 100%;
+  /* max-width: 600px;  */
+  padding: 20px;
+  box-sizing: border-box;
+  margin-top: 30px; 
+}
+img {
+  max-width: 20%;
+  max-height: 20%;
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.profilehead {
+  margin-bottom: 20px;
+  font-weight: bold;
+  /* max-width: 400px; */
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .table-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  }
+
+  .table-full-width {
+    width: 100%;
+
+  }  
+  
+  .table-full-width td {
+    padding-right: 4px;
+  }
+
+  .form-field-wrapper {
+    width: 100%; 
+    display: flex;
+    justify-content: center; 
+  }
+
+  mat-form-field {
+  width: 100%;
+
+  }
+
+  .error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: -20px;
+  }
+
+  .recoverAction {
+    width: 100%; 
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -8px;
+    margin-bottom: 16px; 
+  }
+
+  .actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    max-width: 300px;
+    
+    button {
+      margin: 10px 0;
+      width: 100%;
+      max-width: 300px; 
+      background-color: rgba(56, 53, 53, 0.2);
+      font-size: 18px; 
+    }
+  
+    div{
+      width: 100%;
+      max-width: 300px; 
+    }
+  }
+
+}
+
+@media screen and (max-width: 768px) {
+
+  .profile-container {
+  text-align: center;
+  width: 100%;
+  max-width: 600px; 
+  padding: 20px;
+  box-sizing: border-box;
+  margin-top: 10px; 
+}
+
+  .table-container {
+    flex-direction: column;
+  }
+
+  .table-container td {
+    display: block;
+    width: 100%;
+  }
+}

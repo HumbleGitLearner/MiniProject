@@ -1,1 +1,53 @@
-<p>v2-manual works!</p>
+<form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="fill">
+    <mat-label>User ID</mat-label>
+    <input matInput formControlName="userId" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>File URL</mat-label>
+    <input matInput formControlName="fileUrl">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Payer</mat-label>
+    <input matInput formControlName="payer">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Transaction Time</mat-label>
+    <input matInput formControlName="trxTime" type="datetime-local">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Total</mat-label>
+    <input matInput formControlName="total" type="number" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Category</mat-label>
+    <input matInput formControlName="category">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Platform</mat-label>
+    <input matInput formControlName="platform">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Merchant</mat-label>
+    <input matInput formControlName="merchant">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Consumer</mat-label>
+    <input matInput formControlName="consumer">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Payment Type</mat-label>
+    <input matInput formControlName="paymentType">
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit">Submit</button>
+</form>

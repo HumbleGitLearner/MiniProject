@@ -19,7 +19,8 @@ import nus.mini.backend.models.EnumTypes.PmtsType;
 @AllArgsConstructor
 public class Receipt implements java.io.Serializable{
     private static final long serialVersionUID = 1L;
-    private int id;
+
+     private int id;
 
     @NotBlank(message = "userId is mandatory")
     private int userId=0;
@@ -29,13 +30,13 @@ public class Receipt implements java.io.Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime uploadTime;
 
-    private String payer="";
+    private String payer;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime payTime;
+    private LocalDateTime trxTime;
 
     @NotBlank(message = "total is mandatory")
-    private BigDecimal  total;
+    private BigDecimal total;
 
     private CatType category;
     private PltfmType platform;

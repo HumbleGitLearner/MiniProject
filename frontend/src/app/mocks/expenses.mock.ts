@@ -35,7 +35,7 @@ function generateExpenses(): Expense[] {
       datetime: getRandomDate(),
       categoryId: 100,
       counterparty: 'a',
-      category: category,
+      category: 'OUTFOOD', //category,
       accountId: getRandomAccountId(),
       period: null,
     };

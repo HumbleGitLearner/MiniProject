@@ -3,25 +3,19 @@ import { User } from "../models/user";
 
 export const users: User[] = [
   {
-    id: "1",
-    accountId: "1",
+    id: 1,
+    // accountId: "1",
     email: "bartosz@app.com",
-
-    confirmed: true,
   },
   {
-    id: "2",
-    accountId: "2",
+    id: 2,
+    // accountId: "2",
     email: "john@app.com",
-
-    confirmed: true,
   },
   {
-    id: "3",
-    accountId: "2",
+    id: 3,
+    // accountId: "2",
     email: "mike@app.com",
-    
-    confirmed: true,
   },
 ];
 
@@ -31,7 +25,7 @@ interface Tokens {
 
 export const tokens: Tokens = {
   'loo@app.com':
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJhY2NvdW50SWQiOiIxIiwiZW1haWwiOiJsb29AYXBwLmNvbSIsInJvbGUiOiJPV05FUiIsImlhdCI6MTU4NDYxNTM5MywiZXhwIjoxNzM0NjE1OTkzLCJmaXJzdF9uYW1lIjoiTG9vIn0.3BViohIQndOS0NvLoUXeTP9rVb1McskaxtrOR1dMRso',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJhY2NvdW50SWQiOiIxIiwiZW1haWwiOiJsb29AYXBwLmNvbSIsInJvbGUiOiJPV05FUiIsImlhdCI6MTU4NDYxNTM5MywiZXhwIjoxNzM0NjE1OTkzLCJnaXZlbl9uYW1lIjoiTG9vIn0.sBXLt3_4NGG2Kkwdg-nOUpHDnsf7_u-5oX9GOcwhiK4',
 
   'test@app.com':
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +

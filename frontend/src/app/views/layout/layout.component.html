@@ -4,34 +4,28 @@
       <img id="show-on-big-screen" src="assets/pem.svg" alt="Logo">
     </span>
     <div class="menu">
-
-      <!-- <div class="progress-bar">
-        <mat-progress-bar
-          mode="indeterminate"
-          *ngIf="loadingRoute"
-        ></mat-progress-bar>
-      </div> -->
-      <button mat-button class="menu-item" name="home" routerLink="dashboard">
+      <button mat-button class="menu-item" name="home" routerLink="home">
         <mat-icon svgIcon="home"></mat-icon>
         <div>Home</div>
       </button> 
-      <button mat-button class="menu-item" name="manual" routerLink="dashboard">
+      <button mat-button class="menu-item" name="manual" routerLink="manual">
         <mat-icon svgIcon="manual"></mat-icon>
         <div>Manual</div>
       </button>
-      <button mat-button id="show-on-small-screen" class="menu-item" name="camera" routerLink="dashboard">
+      <!-- <button mat-button id="show-on-small-screen" class="menu-item" name="camera" routerLink="camera"> -->
+      <button mat-button class="menu-item" name="camera" routerLink="camera">
         <mat-icon svgIcon="camera"></mat-icon>
         <div>Camera</div>
       </button>       
-      <button mat-button class="menu-item" name="filesel" routerLink="expenses">
+      <button mat-button class="menu-item" name="filesel" routerLink="selectimage">
         <mat-icon svgIcon="file"></mat-icon>
         <div>Image</div>
       </button>
-      <button mat-button class="menu-item" name="reports" routerLink="expenses">
+      <button mat-button class="menu-item" name="reports" routerLink="reports">
         <mat-icon svgIcon="reports"></mat-icon>
         <div>Reports</div>
       </button>   
-      <button mat-button class="menu-item" name="settings" routerLink="settings/account">
+      <button mat-button class="menu-item" name="settings" routerLink="settings">
         <mat-icon svgIcon="settings"></mat-icon>
         <div>Settings</div>
       </button>
@@ -41,10 +35,9 @@
   <div class="layout-content">
     <mat-toolbar color="primary">
       <div class="left">{{ userEmail$ | async }}  </div>
-      <!-- <period-selector *ngIf="selected !== 'settings'"></period-selector> -->
       
       <div class="center">
-        <span id="show-on-big-screen">Personal Expenses Manager</span>
+        <span id="show-on-big-screen">Personal Expense Manager</span>
         <span id="show-on-small-screen">PEM</span>
       </div>
 

@@ -1,4 +1,3 @@
-import { Id } from "./types";
 import { Period } from "./period";
 import { ExpenseCategory } from "./expenseCategory";
 import { BudgetDefinition } from "./budgetDefinition";
@@ -15,7 +14,7 @@ export class Budget {
     return this.maxExpenses - this.currentExpenses;
   }
   get leftPercentage(): string {
-    return (100 * this.currentExpenses) / this.maxExpenses + "%";
+    return (100 * this.currentExpenses) / this.maxExpenses + '%';
   }
 
   static build(input: BudgetInput): Budget {
@@ -29,7 +28,7 @@ export class Budget {
   }
 
   static buildFromDefinition(
-    accountId: Id,
+    accountId: string | number | undefined,
     period: Period,
     definition: BudgetDefinition
   ): Budget {

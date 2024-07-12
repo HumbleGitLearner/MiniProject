@@ -2,7 +2,6 @@ import { Component, Inject, ViewEncapsulation, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { User } from "../../models/user";
-import { Role } from "../../models/types";
 
 @Component({
   selector: "user-dialog",
@@ -12,7 +11,6 @@ import { Role } from "../../models/types";
 })
 export class UserDialogComponent implements OnInit {
   user!: User;
-  roles!: Role[];
   userForm!: FormGroup;
   inProgress!: boolean;
   submitText!: string;
@@ -25,7 +23,6 @@ export class UserDialogComponent implements OnInit {
 
   ngOnInit() {
     this.user = new User();
-    this.roles = ["OWNER", "READER"];
     this.inProgress = false;
     this.submitText = "Create";
 

@@ -13,7 +13,7 @@ import nus.mini.backend.models.EnumTypes.LoginType;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements Serializable {
+public class UserData implements Serializable {
 
    private static final long serialVersionUID = 1L;
 
@@ -27,16 +27,16 @@ public class User implements Serializable {
    private String password; // password should be hashed
    private String token;
    private String secret;
-   private String first_name;
-   private String last_name;
-   private LocalDateTime lastMod;
-   private LocalDateTime dateCreated;
+   private String givenName;
+   private String lastName;
+   private LocalDateTime lastMod; //not in UserDTO
+   private LocalDateTime dateCreated; //not in UserDTO
    private LoginType loginType;
-   private String descript;
+   private String descript; //not in UserDTO
    private String mobile;
-   private Boolean notif_telegram;
-   private Boolean notif_email;
-   private Boolean scan_email;
+   private Boolean notifTelegram;
+   private Boolean notifEmail;
+   private Boolean scanEmail;
    private long exp; // expiration time
 
 }

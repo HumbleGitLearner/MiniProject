@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 
-import { SharedModule } from "../../services/shared.module";
+import { SharedModule } from "../../services/materials.module";
 import { CategoriesRoutingModule } from "./categories-routing.module";
 import { CategoriesComponent } from "./categories.component";
 import { CategoryFormComponent } from "./category-form.component";

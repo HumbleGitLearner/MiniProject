@@ -1,9 +1,7 @@
-import { Id } from "./types";
-
 export class ExpenseCategory {
   constructor(
-    public id?: Id,
-    public accountId?: Id,
+    public id?: string | number | undefined,
+    public accountId?: string | number | undefined,
     public name = "",
     public counterpartyPatterns: string[] = []
   ) {}

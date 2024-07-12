@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 
 import { ExpensesRoutingModule } from "./expenses-routing.module";
-import { SharedModule } from "../../services/shared.module";
+import { MaterialsModule } from "../../services/materials.module";
 import { ExpenseApi } from "./api/expense.api";
 import { ExpensesService } from "./services/expenses.service";
 import { ExpensesComponent } from "./containers/expenses/expenses.component";
@@ -11,7 +11,7 @@ import { ConfirmDeleteComponent } from "./components/confirm-delete/confirm-dele
 import { ExpenseDialogComponent } from "./components/expense-dialog/expense-dialog-component";
 
 @NgModule({
-  imports: [SharedModule, ReactiveFormsModule, ExpensesRoutingModule],
+  imports: [MaterialsModule, ReactiveFormsModule, ExpensesRoutingModule],
   declarations: [
     ExpensesComponent,
     ExpensesTableComponent,
