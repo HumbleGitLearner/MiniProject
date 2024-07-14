@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import nus.mini.backend.jdbcRepositories.UserRepository;
+import nus.mini.backend.jdbcrepositories.UserRepository;
 import nus.mini.backend.models.UserDTO;
 import nus.mini.backend.models.UserData;
 

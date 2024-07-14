@@ -91,6 +91,7 @@ public class UserController {
     @PostMapping("/recover")
     public ResponseEntity<UserDTO> recoverPWd(@Valid @RequestBody UserDTO user) 
                                     throws DataAccessException, SQLException {
+        System.out.println("recovering password>>> " + user.getEmail());
         Optional<UserDTO>userOpt= userService.findByEmail(user.getEmail());
         if (userOpt.isEmpty()){
             return ResponseEntity.notFound().build();

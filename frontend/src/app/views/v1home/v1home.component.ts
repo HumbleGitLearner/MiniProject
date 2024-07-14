@@ -1,50 +1,55 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Subscription, Observable, filter } from "rxjs";
-
-import { HomeService } from "./home.service";
-import { PeriodService } from "../../services/period.service";
-import { BudgetSummary } from "../../models/budgetSummary";
-import { Budget } from "../../models/budget";
+import { Component, OnInit } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
+import { HomeService } from './home.service';
 
 @Component({
-  selector: 'home',
+  selector: 'app-home',
   templateUrl: './v1home.component.html',
-  styleUrls: ['./v1home.component.scss'],
+  styleUrls: ['./v1home.component.css'],
 })
-export class V1HomeComponent implements OnInit, OnDestroy {
-  budgetSummary$!: Observable<BudgetSummary | null>;
-  budgets!: Budget[];
-  budgetsSub!: Subscription;
-  budgetsLoaded = false;
-  
-  constructor(
-    private home: HomeService,
-    private periodService: PeriodService,
-  ) {}
+export class V1HomeComponent implements OnInit {
+  summaryData: any[];
+  periods = ['Week to Today', 'Month to Date', 'Last Month'];
+  selectedPeriod = 'Week to Today';
+  categoryTreeMapData: { name: string; value: number }[] = [];
+  transactions = new MatTableDataSource<any>([]);
+  view: [number, number] = [700, 400];
+  displayedColumns: string[] = ['date', 'category', 'amount'];
 
-  ngOnInit() {
-    //   const period = this.periodService.getCurrentPeriod();
-    //   this.budgetSummary$ = this.dashboard.getBudgetSummary(period).pipe(
-    //     filter((summary) => summary !== null)
-    //   );
-
-    //   this.budgetsSub = this.dashboard.getBudgets(period).subscribe((budgets) => {
-    //     this.budgets = budgets;
-    //     this.budgetsLoaded = true;
-    //   });
-    // }
-    const period = this.periodService.getCurrentPeriod();
-    this.budgetSummary$ = this.home.getBudgetSummary(period);
-      // this.dashboard
-      //   .getBudgetSummary(period)
-      //   .pipe(filter((summary) => summary !== null));
-    this.budgetsSub = this.home.getBudgets(period).subscribe((budgets) => {
-      this.budgets = budgets;
-      this.budgetsLoaded = true;
-    });
+  constructor(private homeService: HomeService) {
+    this.summaryData = [
+      {
+        label: 'Year to Date',
+        value: this.homeService.getYearToDateTotal(),
+      },
+      {
+        label: '2 Months Ago',
+        value: this.homeService.getTotalTwoMonthsAgo(),
+      },
+      { label: 'Last Month', value: this.homeService.getTotalLastMonth() },
+      {
+        label: 'Month to Date',
+        value: this.homeService.getMonthToDateTotal(),
+      },
+      {
+        label: 'Week to Date',
+        value: this.homeService.getWeekToDateTotal(),
+      },
+    ];
   }
 
-  ngOnDestroy() {
-    this.budgetsSub?.unsubscribe();
+  ngOnInit(): void {
+    this.updateCategoryTreeMap();
+    this.transactions.data = this.homeService.getLast20Transactions();
+  }
+
+  updateCategoryTreeMap() {
+    this.categoryTreeMapData = this.homeService.getExpenseCategories(
+      this.selectedPeriod
+    );
+  }
+
+  onPeriodChange() {
+    this.updateCategoryTreeMap();
   }
 }

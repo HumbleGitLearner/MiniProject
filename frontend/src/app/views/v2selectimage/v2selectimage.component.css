@@ -1,0 +1,36 @@
+.responsive-form {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.left-side, .right-side {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.left-side {
+  width: 50%;
+}
+
+.right-side {
+  width: 50%;
+}
+
+.image-preview img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 16px;
+}
+
+.file-name {
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.upload-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}

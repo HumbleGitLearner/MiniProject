@@ -1,6 +1,6 @@
 
 DROP TABLE IF EXISTS 'receipts';
-CREATE TABLE Receipt (
+CREATE TABLE receipt (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     file_url VARCHAR(255),
@@ -8,26 +8,28 @@ CREATE TABLE Receipt (
     payer VARCHAR(255),
     trx_time TIMESTAMP,
     total DECIMAL(10, 2) NOT NULL,
-    category VARCHAR(255),
-    platform VARCHAR(255),
+    category enum('OUTFOOD','GROCERY','TRANSPORT','EDUCATION','CLOTHING'
+          ,'ENTERTAINMENT','HEALTH','APPLIANCES','OTHER'),
+    platform enum('GRAB','NTUC','FOODPANDA','DELIVEROO'
+          ,'SHOPEE','LAZADA','AMAZON','QOO10','CAROUSELL','OTHER'),
     merchant VARCHAR(255),
     consumer VARCHAR(255),
-    payment_type VARCHAR(255),
+    payment_type enum('CREDIT','DEBIT','CASH','PAYNOW'
+        ,'PAYLAH','PAYPAL','GOOGLEPAY','APPLEPAY','OTHER'),
     FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );
 
-
-CREATE TABLE UserData (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255),
-    token VARCHAR(255),
+    token VARCHAR(3072),
     secret VARCHAR(255),
     given_name VARCHAR(255),
     last_name VARCHAR(255),
     last_mod TIMESTAMP,
     date_created TIMESTAMP,
-    login_type VARCHAR(50),
+    login_type ENUM('GOOGLE', 'GITHUB', 'HOTMAIL', 'LOCAL') NOT NULL,
     descript TEXT,
     mobile VARCHAR(20),
     notif_telegram BOOLEAN,

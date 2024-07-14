@@ -1,4 +1,4 @@
-package nus.mini.backend.mongodbRepositories;
+package nus.mini.backend.mongodbrepositories;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -39,12 +39,12 @@ public class MongoDBRepository {
      *  .projection({ userId: 1, month: 1 , year: 1, createdDate : 1})
      *  .sort({ _id: 1 })
 	 */
-	public List<MonthlyStatement> findStatementsByUser(String user) {
+	public List<MonthlyStatement> findStatementsByUser(Integer user) {
 		Criteria criteria = Criteria.where("userId").is(user);
 		Query query = Query.query(criteria);
 		query.fields().include("userId", "fileName", "createdDate", "content");
  		return template.find(query, Document.class, "monthly_statements").stream()
-			.map(doc -> new MonthlyStatement( doc.getObjectId("_id"), doc.getString("usereId")
+			.map(doc -> new MonthlyStatement( doc.getObjectId("_id"), doc.getInteger("usereId")
                         , doc.getString("fileName")
                         //, doc.get("createdDate". LocalDateTime.class)
                         , LocalDateTime.ofInstant(doc.getDate("createdDate").toInstant(), ZoneId.systemDefault())

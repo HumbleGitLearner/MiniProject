@@ -50,7 +50,7 @@ public class StatementController {
     }
     
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<MonthlyStatement>> getMonthlyStatementByUser(@PathVariable String userId) {
+    public ResponseEntity<List<MonthlyStatement>> getMonthlyStatementByUser(@PathVariable Integer userId) {
         List<MonthlyStatement> stmts = statementService.getStatementsByUser(userId);  
         return ResponseEntity.ok(stmts);
     }   

@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class ReceiptDTO {
 
     private int id;
 
-    @NotBlank(message = "userId is mandatory")
+    @NotNull(message = "userId is mandatory")
     private int userId=0;
 
     private String fileUrl;
@@ -34,7 +35,8 @@ public class ReceiptDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime trxTime;
 
-    @NotBlank(message = "total is mandatory")
+    @NotNull(message = "total is mandatory")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Total must be greater than zero")
     private BigDecimal total;
 
     private CatType category;

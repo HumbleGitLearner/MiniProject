@@ -1,10 +1,11 @@
 package nus.mini.backend.models;
 
 import java.io.Serializable;
+import java.io.StringReader;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonReader;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,9 +28,16 @@ public class PemSetting implements Serializable{
  //   @Column(columnDefinition ="json")
     private String keywordArray;
 
-    public JsonArray getKeywordArrayAJsonArray(){
-        return JsonParser.parseString(this.keywordArray).getAsJsonArray();
-    }
+
+    public JsonArray getKeyArrAsJArr(){
+        try{
+            JsonReader jReader = Json.createReader(new StringReader(this.keywordArray));
+            return jReader.readArray();
+        } catch (Exception e){
+            return null;
+        }
+     }
+     
     public String getKeywordArray(){
         return this.keywordArray;
     }

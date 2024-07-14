@@ -1,6 +1,7 @@
 package nus.mini.backend.exceptions;
 
 import java.sql.SQLException;
+import java.time.DateTimeException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +47,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String>handleDataAccessException(DataAccessException ex){
         logger.error("Data Access Error:"+ex.getMessage(), ex);
         return new ResponseEntity<>("Data Access Error:"+ex.getMessage(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(DateTimeException.class)
+    public ResponseEntity<String>handleDateTimeException(DateTimeException ex){
+        logger.error("Date Time Exception:"+ex.getMessage(), ex);
+        return new ResponseEntity<>("Date Time Exception:"+ex.getMessage(),
             HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

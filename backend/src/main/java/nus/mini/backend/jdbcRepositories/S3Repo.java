@@ -1,4 +1,4 @@
-package nus.mini.backend.jdbcRepositories;
+package nus.mini.backend.jdbcrepositories;
 
 import java.io.IOException;
 import java.util.Date;

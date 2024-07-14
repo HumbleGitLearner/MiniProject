@@ -5,44 +5,46 @@ import { v2SelectimageService } from './v2selectimage.service';
 @Component({
   selector: 'app-v2selectimage',
   templateUrl: './v2selectimage.component.html',
-  styleUrl: './v2selectimage.component.css',
+  styleUrls: ['./v2selectimage.component.css'],
 })
 export class V2SelectimageComponent {
-  // selectedFile: File | null = null;
-
-  // onFileSelected(event: any): void {
-  //   this.selectedFile = event.target.files[0];
-  // }
-
-  // uploadFile(): void {
-  //   if (this.selectedFile) {
-  //     // Handle file upload logic (e.g., send to server or process locally)
-  //     console.log('Selected file:', this.selectedFile.name);
-  //   } else {
-  //     console.log('No file selected.');
-  //   }
-  // }
-
   imageForm: FormGroup;
   selectedFile: File | null = null;
+  photoPreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
     private selectimageService: v2SelectimageService
   ) {
     this.imageForm = this.fb.group({
-      image: [null],
+      category: [''],
+      total: [''],
+      merchant: [''],
+      date: [''],
+      paymentType: [''],
     });
   }
 
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.photoPreview = reader.result;
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
   }
 
   onSubmit() {
     if (this.selectedFile) {
       const formData = new FormData();
       formData.append('image', this.selectedFile);
+      formData.append('category', this.imageForm.get('category')?.value);
+      formData.append('total', this.imageForm.get('total')?.value);
+      formData.append('merchant', this.imageForm.get('merchant')?.value);
+      formData.append('date', this.imageForm.get('date')?.value);
+      formData.append('paymentType', this.imageForm.get('paymentType')?.value);
 
       this.selectimageService.uploadImage(formData).subscribe({
         next: (response) => {
@@ -55,5 +57,3 @@ export class V2SelectimageComponent {
     }
   }
 }
-
-

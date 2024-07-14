@@ -5,8 +5,6 @@ import { MatDialog } from "@angular/material/dialog";
 
 import { AuthService } from "../services/auth.service";
 import { User } from "../models/user";
-import { HttpErrorResponse } from "@angular/common/http";
-//import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
 import { cDialogBoxComponent } from "../services/cdialog.component";
 
 @Component({
@@ -42,16 +40,14 @@ export class LoginComponent implements OnInit {
       id: null,
       email: this.lform['email'].value,
       password: this.lform['password'].value,
-      //token: null,
       secret: "",
       givenName: "",
       lastName: "",
       loginType: 'LOCAL',
       mobile: "",
-      notifTelegram: null,
-      notifEmail: null,
-      scanEmail: null,
-      //exp: 0
+      notifTelegram: false,
+      notifEmail: false,
+      scanEmail: false,
     };
     
     this.authService.login(user)

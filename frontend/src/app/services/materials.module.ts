@@ -17,13 +17,14 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatSelectModule } from "@angular/material/select";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogActions, MatDialogContent } from '@angular/material/dialog';
 
 import { SnackBarComponent } from "./snackbar.component";
-import { PeriodSelectorComponent } from "./period-selector.component";
-import { ExpenseCategoryApi } from "./expenseCategory.api";
+//import { PeriodSelectorComponent } from "./period-selector.component";
+//import { ExpenseCategoryApi } from "./expenseCategory.api";
 
 
 @NgModule({
@@ -51,10 +52,10 @@ import { ExpenseCategoryApi } from "./expenseCategory.api";
     MatDialogActions,
     MatDialogContent,
   ],
-  declarations: [PeriodSelectorComponent, SnackBarComponent],
+  declarations: [SnackBarComponent],
   exports: [
     CommonModule,
-    PeriodSelectorComponent,
+  //  PeriodSelectorComponent,
     SnackBarComponent,
     MatIconModule,
     MatToolbarModule,
@@ -77,7 +78,8 @@ import { ExpenseCategoryApi } from "./expenseCategory.api";
     MatCheckboxModule,
     MatDialogActions,
     MatDialogContent,
+    MatNativeDateModule,
   ],
-  providers: [ExpenseCategoryApi],
+  providers: [MatDatepickerModule, MatNativeDateModule],
 })
 export class MaterialsModule {}

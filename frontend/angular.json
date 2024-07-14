@@ -20,7 +20,8 @@
               "zone.js"
             ],
             "allowedCommonJsDependencies": [
-            "rxjs-compat"
+            "rxjs-compat",
+            "rfdc"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -45,13 +46,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "5mb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "250kb",
+                  "maximumError": "250kb"
                 }
               ],
               "outputHashing": "all"
@@ -70,7 +71,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "proxyConfig": "proxy.conf.json"
+            "proxyConfig": "proxy.config.json"
           },
           "configurations": {
             "production": {

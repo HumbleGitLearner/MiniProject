@@ -26,7 +26,7 @@ public class MonthlyStatement implements Serializable  {
     private ObjectId _id;
 
     @NotBlank(message="UserID is mandatory")
-    private String userId;
+    private int userId;
 
     @NotBlank(message="fileName is mandatory")
     private String fileName;
@@ -36,7 +36,7 @@ public class MonthlyStatement implements Serializable  {
 
     private byte[] content;
 
-    public MonthlyStatement(String userId, String fileName, LocalDateTime createdDate, byte[] content) {
+    public MonthlyStatement(int userId, String fileName, LocalDateTime createdDate, byte[] content) {
         this.userId = userId;
         this.fileName = fileName;
         this.createdDate = createdDate;
@@ -47,7 +47,7 @@ public class MonthlyStatement implements Serializable  {
     public static MonthlyStatement toStatement(org.bson.Document doc) {
 		MonthlyStatement stmnt = new MonthlyStatement();
 		stmnt.set_id(doc.getObjectId("_id")); //.toHexString() if storing id as string
-		stmnt.setUserId(doc.getString("userId"));
+		stmnt.setUserId(doc.getInteger("userId"));
 		stmnt.setFileName(doc.getString("fileName"));
 		stmnt.setCreatedDate(doc.get("createdDate", LocalDateTime.class));
         stmnt.setContent(doc.get("content", byte[].class));
@@ -56,7 +56,7 @@ public class MonthlyStatement implements Serializable  {
 
 	@Override
 	public String toString() {
-        return "MonthlyStatement[_id=%s, userId=%s, fileName=%s, createdDate=%s, content=%s]"
+        return "MonthlyStatement[_id=%s, userId=%d, fileName=%s, createdDate=%s, content=%s]"
                 .formatted(_id, userId, fileName, createdDate.toString(), new String(content));
 	}
 

@@ -26,18 +26,18 @@
               <td>
                 <mat-form-field>
                   <mat-label>First Name</mat-label>
-                  <input type="text" matInput placeholder="First Name" formControlName="firstname" required>
+                  <input type="text" matInput placeholder="First Name" formControlName="givenName" required>
                   <mat-error
-                    *ngIf="this.editUserForm.controls['firstname'].touched && this.editUserForm.controls['firstname'].hasError('required')">
+                    *ngIf="this.editUserForm.controls['givenName'].touched && this.editUserForm.controls['givenName'].hasError('required')">
                     First Name is required</mat-error>
                   </mat-form-field>
               </td>
               <td>
                 <mat-form-field>
                   <mat-label>Last Name</mat-label>
-                  <input type="text" matInput placeholder="Last Name" formControlName="lastname" required>
+                  <input type="text" matInput placeholder="Last Name" formControlName="lastName" required>
                   <mat-error 
-                    *ngIf="this.editUserForm.controls['lastname'].touched && this.editUserForm.controls['lastname'].hasError('required')">
+                    *ngIf="this.editUserForm.controls['lastName'].touched && this.editUserForm.controls['lastName'].hasError('required')">
                     Last Name is required</mat-error>                  
                 </mat-form-field>
               </td>
@@ -95,13 +95,13 @@
             <input
               matInput
               type="tel"
-              placeholder="Enter mobile number (e.g. 1234 5678)"
+              placeholder="Enter mobile number (e.g. 12345678)"
               formControlName="mobile"
-              pattern="\d{4} \d{4}"
+              pattern="\d{4}\d{4}"
               required
             />
             <mat-error *ngIf="editUserForm.controls['mobile'].touched && editUserForm.controls['mobile'].hasError('required')">Mobile number is <strong>required</strong></mat-error>
-            <mat-error *ngIf="editUserForm.controls['mobile'].touched && editUserForm.controls['mobile'].hasError('pattern')">Mobile number must be <strong>8 digits</strong> long (e.g. 1234 5678)</mat-error>
+            <mat-error *ngIf="editUserForm.controls['mobile'].touched && editUserForm.controls['mobile'].hasError('pattern')">Mobile number must be <strong>8 digits</strong> long (e.g. 12345678)</mat-error>
           </mat-form-field>
         </div>
 
@@ -109,15 +109,15 @@
           <table class="table-full-width" cellspacing="0">
             <tr>
               <td>
-                <mat-checkbox formControlName="ischktelegram" color="green">Telegram Notification</mat-checkbox>
+                <mat-checkbox formControlName="notifTelegram" color="green">Telegram Notification</mat-checkbox>
               </td>
               <td>
-                <mat-checkbox formControlName="ischkemail" color="green">Email Notification</mat-checkbox>
+                <mat-checkbox formControlName="notifEmail" color="green">Email Notification</mat-checkbox>
               </td>
             </tr>
           </table>
         </div>
-        <mat-checkbox formControlName="ischkscanemail" color="green"> Scan email for receipts</mat-checkbox>
+        <mat-checkbox formControlName="scanEmail" color="green"> Scan email for receipts</mat-checkbox>
 
         <div class="actions">
           <button

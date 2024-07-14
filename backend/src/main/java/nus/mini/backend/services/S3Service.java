@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import nus.mini.backend.jdbcRepositories.S3Repo;
+import nus.mini.backend.jdbcrepositories.S3Repo;
 import nus.mini.backend.models.UserData;
 
 @Service

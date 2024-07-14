@@ -1,9 +1,6 @@
 import { Observable, of } from "rxjs";
-import { AuthStrategy } from "./auth.strategy";
-import { Token } from "../models/token";
 import { User } from "../models/user";
 
-//export class JwtAuthStrategy implements AuthStrategy<Token> {
 export class JwtAuthStrategy {
   private readonly JWT_TOKEN = 'PEM_JWT';
   private readonly PEM_TOKEN = 'PEM_UID';

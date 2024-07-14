@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.mongodb.client.result.UpdateResult;
 
 import nus.mini.backend.models.MonthlyStatement;
-import nus.mini.backend.mongodbRepositories.MongoDBRepository;
+import nus.mini.backend.mongodbrepositories.MongoDBRepository;
 
 
 @Service
@@ -25,7 +25,7 @@ public class StatementService {
         return mongoRepo.updateStatementById(id, stmt);
     }
 
-    public List<MonthlyStatement> getStatementsByUser(String user){
+    public List<MonthlyStatement> getStatementsByUser(Integer user){
         return mongoRepo.findStatementsByUser(user);
     }
 

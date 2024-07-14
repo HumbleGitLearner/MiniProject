@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import nus.mini.backend.jdbcRepositories.GPhotoRepository;
+import nus.mini.backend.jdbcrepositories.GPhotoRepository;
 import nus.mini.backend.models.GPhotoSetting;
 
 

@@ -30,10 +30,7 @@ export class SignupComponent implements OnInit {
         password: ['', Validators.required],
         passwordConfirm: ['', Validators.required],
         secret: ['', Validators.required],
-        mobile: [
-          '',
-          [Validators.required, Validators.pattern(/^[0-9]{4} [0-9]{4}$/)],
-        ],
+        mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{4} [0-9]{4}$/)]],
         ischktelegram: [false, []],
         ischkemail: [false, []],
         ischkscanemail: [false, []],
@@ -41,10 +38,6 @@ export class SignupComponent implements OnInit {
       { validators: CustomValidators.passwordsMatching }
     );
   }
-
-  // get newform() {
-  //   return this.signupForm.controls;
-  // }
 
   get passwordConfirm() {
     return this.signupForm.get('passwordConfirm');
@@ -60,7 +53,6 @@ export class SignupComponent implements OnInit {
         id: null,
         email: this.signupForm.controls['email'].value,
         password: this.signupForm.controls['password'].value,
-        //token: null,
         secret: this.signupForm.controls['secret'].value,
         givenName: this.signupForm.controls['firstname'].value,
         lastName: this.signupForm.controls['lastname'].value,
@@ -69,7 +61,6 @@ export class SignupComponent implements OnInit {
         notifTelegram: this.signupForm.controls['ischktelegram'].value,
         notifEmail: this.signupForm.controls['ischkemail'].value,
         scanEmail: this.signupForm.controls['ischkscanemail'].value,
-        //exp: 0
       })
       .subscribe(
         (data) => {
@@ -89,19 +80,14 @@ export class SignupComponent implements OnInit {
             }
           });
         },
-        (error) => {
-          if (error.status === 409) {
-            if (!error.error) localStorage.setItem('PEM_UID', error.error);
-          } else {
-            const dialogRef = this.dialog.open(cDialogBoxComponent, {
-              data: {
-                message: [
-                  'Signup Error',
-                  'Problem with signup. Please try again.',
-                ],
-              },
-            });
-          }
+        (error) => {        
+          const dialogRef = this.dialog.open(cDialogBoxComponent, {
+            data: {
+              message: [
+                'Signup Error', `Problem with signup. ${error.error}`,
+              ],
+            },
+          });
         }
       );
   }

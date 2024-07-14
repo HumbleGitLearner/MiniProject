@@ -18,7 +18,7 @@ import { Location } from "@angular/common";
 import { Subscription, Observable } from "rxjs";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
-import { MenuItemDirective } from "../../services/menu-item.directive";
+//import { MenuItemDirective } from "../../services/menu-item.directive";
 import { AuthService } from "../../services/auth.service";
 import { MatDialog } from '@angular/material/dialog';
 import { LogoutDialogComponent } from './logout.component';
@@ -30,7 +30,7 @@ import { LogoutDialogComponent } from './logout.component';
 })
 export class LayoutComponent implements AfterViewInit//, OnDestroy
 {
-  @ViewChildren(MenuItemDirective)
+//  @ViewChildren(MenuItemDirective)
   //private buttons!: QueryList<MenuItemDirective>;
   //private routerSub: Subscription;
   public loadingRoute = false;

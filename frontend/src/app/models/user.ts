@@ -1,9 +1,7 @@
-//import { Account } from "./account";
+type LoginType = 'LOCAL' | 'GOOGLE' | 'GITHUB' | 'HOTMAIL';
 
 export class User {
   id?: number | null;
-  // accountId?: string;
-  // account?: Account;
 
   email?: string; //for login name
   password?: string;
@@ -12,12 +10,11 @@ export class User {
   givenName?: string;
   lastName?: string;
   lastMod?: string;
-  loginType?: string; //LOCAL, GOOGLE, GITHUB, HOTMAIL
-
+  loginType?: LoginType;
   mobile?: string; //for telegram
-  notifTelegram?: boolean | null;
-  notifEmail?: boolean | null;
-  scanEmail?: boolean | null;
+  notifTelegram?: boolean;
+  notifEmail?: boolean;
+  scanEmail?: boolean;
   exp?: number;
   iat?: string;
   iss?: string;

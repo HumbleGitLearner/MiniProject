@@ -6,8 +6,6 @@ import { tap, map, catchError, switchMap } from "rxjs/operators";
 
 import { config} from "./config";
 import { CacheService } from "./cache.service";
-//import { AuthStrategy, AUTH_STRATEGY } from "./auth.strategy";
-import { LoginRequest } from "../models/loginRequest";
 import { User } from "../models/user";
 import { JwtAuthStrategy } from "./jwt-auth.strategy";
 
@@ -23,19 +21,17 @@ export class AuthService {
     private router: Router,
     private http: HttpClient,
     private cacheService: CacheService,
-    //    @Inject(AUTH_STRATEGY) private auth: AuthStrategy<any>
     private auth: JwtAuthStrategy
   ) {}
 
   signup(user: User): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http
-      .post<any>(`${config['usersUrl']}/add`, user, { headers })
-      .pipe(
-        catchError((error) => {
-          return throwError(error);
-        })
-      );
+    return this.http.post<any>(`${config['usersUrl']}/add`, user, { headers });
+  }
+
+  requestRecovery(user: User): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<any>(`${config['usersUrl']}/recover`, user, { headers });
   }
 
   login(user: User): Observable<User> {
@@ -44,7 +40,7 @@ export class AuthService {
       .post<any>(`${config['usersUrl']}/login`, user, { headers })
       .pipe(
         tap((data) => {
-          this.auth.doLoginUser({ token: data.token, id: data.id })
+          this.auth.doLoginUser({ token: data.token, id: data.id });
         }),
         catchError((error) => {
           if (error.status === 404) {
@@ -56,57 +52,95 @@ export class AuthService {
       );
   }
 
-  requestRecovery(user: User): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post<any>(`${config['usersUrl']}/recover`, user, {
-      headers,
-    });
-  }
-
   isLoggedIn$(): Observable<boolean> {
     return this.auth.getCurrentUser().pipe(
-      map((user) => {
+      switchMap((user) => {
         if (!user || !user.jwtToken.exp) {
-          return false;
+          return of(false);
         }
         const expTimestampMillis = parseInt(user.jwtToken.exp) * 1000;
         const inputDate = new Date(expTimestampMillis);
         const today = new Date();
         if (!user.pemToken) {
-          this.signup({
+          return this.signup({
             id: 0,
             email: user.jwtToken.email,
             password: '',
-            token: '',
+            //token: user.jwtToken,
             secret: '',
             givenName: user.jwtToken.given_name,
-            lastName: user.jwtToken.last_name,
+            lastName: user.jwtToken.family_name,
             loginType: 'GOOGLE',
             mobile: '',
             notifTelegram: false,
             notifEmail: false,
             scanEmail: false,
-            exp: 0,
-          })
-            .subscribe(
-            (response) => {
-              // this.auth.doLoginGUser(response);
-            },
-            (error) => {
+            exp: Number(user.jwtToken.exp),
+          }).pipe(
+            switchMap((response) => {
+              this.auth.doLoginGUser(response);
+              return of(true);
+            }),
+            catchError((error) => {
               if (error.status === 409) {
                 this.auth.doLoginGUser(error.error);
-                return throwError(error);
+                return of(true);
               } else {
-                return false;
+                return of(false);
               }
-            }
+            })
           );
         }
-        return !!user && inputDate >= today;
+        return of(!!user && inputDate >= today);
       }),
       catchError(() => of(false))
     );
   }
+
+  // isLoggedIn$(): Observable<boolean> {
+  //   return this.auth.getCurrentUser().pipe(
+  //     map((user) => {
+  //       if (!user || !user.jwtToken.exp) {
+  //         return false;
+  //       }
+  //       const expTimestampMillis = parseInt(user.jwtToken.exp) * 1000;
+  //       const inputDate = new Date(expTimestampMillis);
+  //       const today = new Date();
+  //       if (!user.pemToken) {
+  //         this.signup({
+  //           id: 0,
+  //           email: user.jwtToken.email,
+  //           password: '',
+  //           token: '',
+  //           secret: '',
+  //           givenName: user.jwtToken.given_name,
+  //           lastName: user.jwtToken.last_name,
+  //           loginType: 'GOOGLE',
+  //           mobile: '',
+  //           notifTelegram: false,
+  //           notifEmail: false,
+  //           scanEmail: false,
+  //           exp: 0,
+  //         })
+  //           .subscribe(
+  //           (response) => {
+  //             // this.auth.doLoginGUser(response);
+  //           },
+  //           (error) => {
+  //             if (error.status === 409) {
+  //               this.auth.doLoginGUser(error.error);
+  //               return throwError(error);
+  //             } else {
+  //               return false;
+  //             }
+  //           }
+  //         );
+  //       }
+  //       return !!user && inputDate >= today;
+  //     }),
+  //     catchError(() => of(false))
+  //   );
+  // }
 
   getCurrentUser$(): Observable<any | null> {
     return this.auth.getCurrentUser();

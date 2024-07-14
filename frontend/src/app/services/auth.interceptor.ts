@@ -11,7 +11,6 @@ import { catchError } from "rxjs/operators";
 //import { config } from "../services/config";
 import { AuthService } from "./auth.service";
 import { JwtAuthStrategy } from "./jwt-auth.strategy";
-import { AUTH_STRATEGY } from "./auth.strategy";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {

@@ -24,6 +24,7 @@
     "@capacitor/camera": "^6.0.1",
     "@capacitor/cli": "^6.1.0",
     "@capacitor/core": "^6.1.0",
+    "@capacitor/filesystem": "^6.0.0",
     "@ionic/angular": "^8.2.5",
     "@ng-bootstrap/ng-bootstrap": "^17.0.0",
     "@ngrx/component-store": "^18.0.1",

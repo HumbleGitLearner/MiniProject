@@ -1,14 +1,16 @@
 package nus.mini.backend.services;
 
+import java.io.StringReader;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-
-import nus.mini.backend.jdbcRepositories.PemSettingRepository;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonReader;
+import nus.mini.backend.jdbcrepositories.PemSettingRepository;
 import nus.mini.backend.models.PemSetting;
 
 @Service
@@ -40,13 +42,31 @@ public class PemSettingService {
         int result = 0;
         PemSetting pemSetting = pemSettingRepository.findById(id);
         if (pemSetting !=null){
-            JsonArray jsonArray = JsonParser.parseString(pemSetting.getKeywordArray()).getAsJsonArray();
-
-            jsonArray.add(newKeyword);
-            pemSetting.setKeywordArray(jsonArray.toString());
-            result= pemSettingRepository.update(pemSetting);
+            try{
+                JsonReader jReader = Json.createReader(new StringReader(pemSetting.getKeywordArray()));
+                JsonArrayBuilder jArrBuilder = Json.createArrayBuilder(jReader.readArray());
+                JsonArray kJArray= jArrBuilder.add(newKeyword).build();
+                pemSetting.setKeywordArray(kJArray.toString());    
+                result= pemSettingRepository.update(pemSetting);
+            } catch (Exception e){
+                return 0;
+            }
         }
         return result;
     }
+
+    public JsonArray getKeyArrAsJArr(int id){
+        PemSetting pemSetting = pemSettingRepository.findById(id);
+        if (pemSetting !=null){ 
+            try{
+                JsonReader jReader = Json.createReader(new StringReader(pemSetting.getKeywordArray()));
+                return jReader.readArray();
+            } catch (Exception e){
+                return null;
+            }
+        } 
+        return null;
+    }  
+
 
 }

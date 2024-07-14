@@ -1,11 +1,11 @@
 <div class="camera-container">
-  <div class="camera-preview">
+  <div class="camera-preview" *ngIf="!photo">
     <video #videoElement autoplay></video>
     <div class="focus-box"></div>
   </div>
   <div *ngIf="photo; else cameraControls">
-    <img [src]="photo" alt="Captured Photo" />
-    <button mat-raised-button color="primary" (click)="uploadPhoto()">Upload Photo</button>
+    <img [src]="photo" alt="Captured Photo" class="captured-photo"/>
+    <button mat-raised-button color="primary" (click)="uploadPhoto()">Upload Image</button>
     <button mat-raised-button color="warn" (click)="retakePhoto()">Retake Photo</button>
   </div>
   <ng-template #cameraControls>

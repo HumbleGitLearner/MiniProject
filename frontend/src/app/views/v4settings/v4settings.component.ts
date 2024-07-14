@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserServices } from '../../services/user.service'; // Assume you have a UserService to handle HTTP requests
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { UserServices } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { CustomValidators } from '../../services/custom-validator';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,28 +17,33 @@ export class V4SettingsComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserServices,
-    private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.editUserForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      firstname: ['', Validators.required],
-      lastname: ['', Validators.required],
-      password: ['', Validators.required],
-      passwordConfirm: ['', Validators.required],
-      secret: ['', Validators.required],
-      mobile: [
-        '',
-        [Validators.required, Validators.pattern(/^[0-9]{4} [0-9]{4}$/)],
-      ],
-      ischktelegram: [],
-      ischkemail: [],
-      ischkscanemail: [],
-    });
-
+    this.editUserForm = this.formBuilder.group(
+      {
+        id: [0],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', Validators.required],
+        token: [0],
+        secret: ['', Validators.required],
+        givenName: ['', Validators.required],
+        lastName: ['', Validators.required],
+        loginType: ['LOCAL'],
+        mobile: [
+          '',
+          [Validators.required, Validators.pattern(/^[0-9]{4}[0-9]{4}$/)],
+        ],        
+        notifTelegram: [false],
+        notifEmail: [false],
+        scanEmail: [false],
+        exp: [0],
+        passwordConfirm: ['', Validators.required],
+      },
+      { validators: CustomValidators.passwordsMatching }
+    );
     this.loadUserProfile();
   }
 
@@ -55,7 +59,9 @@ export class V4SettingsComponent implements OnInit {
     this.userService.getUserProfile().subscribe(
       (data) => {
         this.editUserForm.patchValue(data);
-        this.editUserForm.controls['passwordConfirm']=this.editUserForm.controls['password']
+        this.editUserForm.controls['passwordConfirm'].patchValue(
+          this.editUserForm.controls['password'].value
+        );
       },
       (error) => {
         const dialogRef = this.dialog.open(cDialogBoxComponent, {
@@ -68,9 +74,6 @@ export class V4SettingsComponent implements OnInit {
             this.router.navigate(['/app/home']);
           }
         });
-        // this.snackBar.open('Failed to load user profile', 'Close', {
-        //   duration: 3000,
-        // });
       }
     );
   }
@@ -78,6 +81,7 @@ export class V4SettingsComponent implements OnInit {
   updateProfile(): void {
     if (this.editUserForm.valid) {
       const profileData = this.editUserForm.getRawValue();
+      console.error("AAAA", profileData);
       this.userService.updateUserProfile(profileData).subscribe(
         () => {
             const dialogRef = this.dialog.open(cDialogBoxComponent, {
@@ -89,11 +93,7 @@ export class V4SettingsComponent implements OnInit {
               if (result) {
                 this.router.navigate(['/app/home']);
               }
-            });
-        
-          // this.snackBar.open('Profile updated successfully', 'Close', {
-          //   duration: 3000,
-          // });
+            });        
         },
         (error) => {
           const dialogRef = this.dialog.open(cDialogBoxComponent, {
@@ -106,9 +106,6 @@ export class V4SettingsComponent implements OnInit {
               this.router.navigate(['/app/home']);
             }
           });
-          // this.snackBar.open('Failed to update profile', 'Close', {
-          //   duration: 3000,
-          // });
         }
       );
     }

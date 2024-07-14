@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, switchMap } from 'rxjs';
 
 import { JwtAuthStrategy } from './jwt-auth.strategy';
@@ -10,7 +10,6 @@ import { User } from '../models/user';
   providedIn: 'root',
 })
 export class UserServices {
-  //private apiUrl = 'http://localhost:8080/api/user'; // Replace with your API endpoint
 
   constructor(private http: HttpClient, private auth: JwtAuthStrategy) {}
 
@@ -21,10 +20,11 @@ export class UserServices {
       }));
   }
 
-  updateUserProfile(user: User): Observable<any> {
+  updateUserProfile(userdata: User): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.auth.getCurrentUser().pipe(
       switchMap((user) => {
-        return this.http.put<any>(`${config['usersUrl']}/${user.pemToken}`, user);
+        return this.http.put<any>(`${config['usersUrl']}/${user.pemToken}`, userdata, { headers });
       }));
   }
   

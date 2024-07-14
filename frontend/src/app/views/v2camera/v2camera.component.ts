@@ -2,17 +2,29 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Camera, CameraResultType } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
+import { ExpenseServices } from '../../services/expense.service';
+import { config } from '../../services/config';
+import { JwtAuthStrategy } from '../../services/jwt-auth.strategy';
+import { MatDialog } from '@angular/material/dialog';
+import { cDialogBoxComponent } from '../../services/cdialog.component';
+
 
 @Component({
-  selector: 'app-camera-upload',
+  selector: 'camera-upload',
   templateUrl: './v2camera.component.html',
   styleUrls: ['./v2camera.component.css'],
 })
 export class V2CameraComponent implements OnInit {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   photo: string | null | undefined = null;
-
-  constructor(private http: HttpClient) {}
+  uid: number = 0;
+  today = new Date();
+  constructor(
+    private http: HttpClient,
+    private ExpenseServices: ExpenseServices,
+    private auth: JwtAuthStrategy,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.startCamera();
@@ -20,7 +32,7 @@ export class V2CameraComponent implements OnInit {
 
   async startCamera() {
     if (Capacitor.isNativePlatform()) {
-      // For mobile platforms, use the Capacitor Camera plugin
+      // For mobile platforms
       const cameraResult = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
@@ -28,7 +40,7 @@ export class V2CameraComponent implements OnInit {
       });
       this.photo = cameraResult.dataUrl;
     } else {
-      // For web, use native getUserMedia API
+      // For web
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       this.videoElement.nativeElement.srcObject = stream;
     }
@@ -63,29 +75,18 @@ export class V2CameraComponent implements OnInit {
 
   uploadPhoto() {
     if (this.photo) {
-      const blob = this.dataURItoBlob(this.photo);
-      const formData = new FormData();
-      formData.append('file', blob, 'photo.png');
-
-      this.http.post('http://your-backend-url/upload', formData).subscribe(
+      this.ExpenseServices.uploadImage(this.photo, this.uid).subscribe(
         (response) => {
-          console.log('Upload successful', response);
+          this.dialog.open(cDialogBoxComponent, {
+            data: { message: ['Upload Image', `Upload successful`] },
+          });
         },
         (error) => {
-          console.error('Upload failed', error);
+          this.dialog.open(cDialogBoxComponent, {
+            data: { message: ['Upload Image', `Upload failed`] },
+          });
         }
       );
     }
-  }
-
-  dataURItoBlob(dataURI: string) {
-    const byteString = atob(dataURI.split(',')[1]);
-    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ab], { type: mimeString });
   }
 }

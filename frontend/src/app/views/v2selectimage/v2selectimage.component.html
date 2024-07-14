@@ -1,11 +1,47 @@
-<!-- <div class="container mt-4">
+<div class="container mt-4">
   <h3>File Upload</h3>
-  <input type="file" (change)="onFileSelected($event)" />
-  <button class="btn btn-primary mt-2" (click)="uploadFile()">Upload</button>
-</div> -->
+  <form [formGroup]="imageForm" (ngSubmit)="onSubmit()" class="responsive-form">
+    <!-- Left Side: File Input and Image Preview -->
+    <div class="left-side" fxFlex="100" fxFlex.md="50">
+      <input type="file" accept="image/jpeg" (change)="onFileSelected($event)" style="display: none;" #fileInput>
+      <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
+        <mat-icon>folder_open</mat-icon> Choose JPEG File
+      </button>
+      <span *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</span>
+      <div *ngIf="photoPreview" class="image-preview">
+        <img [src]="photoPreview" alt="Image Preview" />
+      </div>
+    </div>
 
-<form [formGroup]="imageForm" (ngSubmit)="onSubmit()">
-  <input type="file" (change)="onFileSelected($event)">
-  <button mat-raised-button color="primary" type="submit">Upload</button>
-</form>
+    <!-- Right Side: Form Fields -->
+    <div class="right-side" fxFlex="100" fxFlex.md="50">
+      <mat-form-field appearance="fill">
+        <mat-label>Category</mat-label>
+        <input matInput formControlName="category" required />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Total</mat-label>
+        <input matInput type="number" formControlName="total" required />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Merchant</mat-label>
+        <input matInput formControlName="merchant" required />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" required />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Payment Type</mat-label>
+        <input matInput formControlName="paymentType" required />
+      </mat-form-field>
+    </div>
 
+    <!-- Center Bottom: Upload Button -->
+    <div class="upload-button-container">
+      <button mat-raised-button color="primary" type="submit" [disabled]="!photoPreview">Upload</button>
+    </div>
+  </form>
+</div>
