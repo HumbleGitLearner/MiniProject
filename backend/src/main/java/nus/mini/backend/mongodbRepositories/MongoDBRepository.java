@@ -1,5 +1,8 @@
 package nus.mini.backend.mongodbrepositories;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -12,8 +15,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.result.UpdateResult;
 
 import nus.mini.backend.models.MonthlyStatement;
@@ -23,8 +30,44 @@ import nus.mini.backend.models.MonthlyStatement;
 
 @Repository
 public class MongoDBRepository {
-    @Autowired
-    private MongoTemplate template;
+	@Autowired
+	private MongoTemplate template;
+
+	@Autowired
+	private GridFsTemplate gridFsTemplate;
+
+	@Autowired
+	private GridFSBucket gridFSBucket;
+
+	public ObjectId saveReceiptImg(String fileName, String contentType, 
+				byte[] content) throws Exception {
+		try (InputStream is = new ByteArrayInputStream(content)){
+			GridFSUploadOptions options = new GridFSUploadOptions()
+					.metadata(new org.bson.Document("type", contentType));
+			ObjectId id = gridFSBucket.uploadFromStream(fileName, is, options);
+			return id;
+		}
+	}
+
+	//returning HexString of the save receiptImg using GridFsTemplate
+	public ObjectId saveReceiptImgTemp(String fileName, 
+			String contentType, byte[] content)throws IOException  {
+		try(InputStream is = new ByteArrayInputStream(content)){
+			ObjectId id = gridFsTemplate.store(is, fileName, contentType);
+			return id;
+		}
+	}	
+
+	public byte[] downloadReceipt(String id) throws IOException {
+	    GridFsResource gridFsResource = gridFsTemplate.getResource(id);
+		byte[] content= null;
+	    if (gridFsResource != null) {
+			try(InputStream inputStream = gridFsResource.getInputStream()){
+				content= inputStream.readAllBytes();
+			}	
+		}
+		return content;
+	}
 
     public MonthlyStatement save(MonthlyStatement statement) {
         return template.save(statement);

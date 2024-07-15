@@ -1,5 +1,6 @@
 package  nus.mini.backend.controllers;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
@@ -18,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.validation.Valid;
 import nus.mini.backend.models.ReceiptDTO;
+import nus.mini.backend.services.DocumentService;
 import nus.mini.backend.services.ReceiptService;
 
 
@@ -33,6 +36,15 @@ public class ReceiptController {
 
     @Autowired
     private ReceiptService receiptService;
+        
+    @Autowired
+    private DocumentService docService;
+
+
+    //ToDo
+    // @GetMapping("/download/{id}") //download receipt image files
+    // public ResponseEntity<byte[]> downloadReceipt(@PathVariable int id) {
+    // }
 
     @GetMapping("/all")
     public ResponseEntity<List<ReceiptDTO>> getAllReceipts() 
@@ -90,6 +102,29 @@ public class ReceiptController {
         receipt.setId(id);
         return ResponseEntity.ok(receipt);
     }
+
+    @PostMapping("/upload/{userId}")
+    public ResponseEntity<String> uploadReceiptImg(
+                @RequestParam("file") MultipartFile file , @PathVariable int userId) 
+                throws DataAccessException, SQLException, IOException {
+        try{
+            //upload the file to MongoDB and create a ReceiptImage document
+            String filename= file.getOriginalFilename();
+            String contentType = file.getContentType();
+            byte[] content = file.getBytes();
+            String docIdHex = docService.saveReceiptImg(userId, filename, contentType, content);
+            
+            //calling Document AI API to extract text from the image
+            //create a new Receipt record in MySql
+            if (docIdHex == null) {
+                return ResponseEntity.internalServerError().build();
+            }
+            return ResponseEntity.ok(docIdHex);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
 
     @PutMapping("/{id}")
     public ResponseEntity<ReceiptDTO> updateReceipt(@PathVariable int id, 
