@@ -3,11 +3,14 @@ package  nus.mini.backend.controllers;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.validation.Valid;
+import nus.mini.backend.models.EnumTypes;
 import nus.mini.backend.models.ReceiptDTO;
 import nus.mini.backend.services.DocumentService;
 import nus.mini.backend.services.ReceiptService;
@@ -77,6 +81,29 @@ public class ReceiptController {
             return ResponseEntity.ok(receipts);
         }
     }
+
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> downloadReceiptImg(@RequestParam("fileUrl") String fileUrl)
+             throws DataAccessException, SQLException, IOException {
+      //  System.out.println("downloadReceiptImg >>> fileUrl: "+fileUrl);
+        byte[] content = docService.downloadReceipt(fileUrl);
+        if (content == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String contentType = docService.getContentType(fileUrl);
+      //  System.out.println("downloadReceiptImg >>> content: "+contentType);
+        if ((contentType == null)|| !MediaType.parseMediaType(contentType).isConcrete()) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+    
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(contentType));
+        headers.setContentDispositionFormData("attachment", fileUrl);
+    
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(content);    
+    }
     
 
     //"SELECT * FROM receipts ORDER BY trx_time DESC LIMIT 3;"
@@ -103,8 +130,9 @@ public class ReceiptController {
         return ResponseEntity.ok(receipt);
     }
 
+    //returning the id of the receipt newly created from the uploaded image
     @PostMapping("/upload/{userId}")
-    public ResponseEntity<String> uploadReceiptImg(
+    public ResponseEntity<Integer> uploadReceiptImg(
                 @RequestParam("file") MultipartFile file , @PathVariable int userId) 
                 throws DataAccessException, SQLException, IOException {
         try{
@@ -113,13 +141,25 @@ public class ReceiptController {
             String contentType = file.getContentType();
             byte[] content = file.getBytes();
             String docIdHex = docService.saveReceiptImg(userId, filename, contentType, content);
-            
+             if (docIdHex == null) {
+                return ResponseEntity.internalServerError().build();
+            }           
             //calling Document AI API to extract text from the image
             //create a new Receipt record in MySql
-            if (docIdHex == null) {
-                return ResponseEntity.internalServerError().build();
-            }
-            return ResponseEntity.ok(docIdHex);
+           // System.out.println("UploadReceiptImg >>> docIdHex: "+docIdHex);
+            ReceiptDTO receipt = ReceiptDTO.builder( )
+                            .userId(userId)
+                            .fileUrl(filename)
+                            .uploadTime(LocalDateTime.now())
+                            .total(new BigDecimal(0.0))
+                            .trxTime(LocalDateTime.now())
+                            .category(EnumTypes.CatType.OTHER)
+                            .platform(EnumTypes.PltfmType.OTHER)
+                            .paymentType(EnumTypes.PmtsType.OTHER)
+                            .build();
+          //  System.out.println("UploadReceiptImg >>> receipt: "+receipt.toString());
+            int id = receiptService.save(receipt);
+            return ResponseEntity.ok(id);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

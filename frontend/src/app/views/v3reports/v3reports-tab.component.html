@@ -1,0 +1,33 @@
+<div>
+  <ngx-charts-bar-horizontal
+    [results]="barChartData"
+    [xAxis]="true"
+    [yAxis]="true"
+    [legend]="true"
+    [showXAxisLabel]="true"
+    [showYAxisLabel]="true"
+    xAxisLabel="Month"
+    yAxisLabel="Total Expense">
+  </ngx-charts-bar-horizontal>
+</div>
+
+<div>
+  <mat-form-field appearance="fill">
+    <mat-label>Select Month</mat-label>
+    <mat-select [(value)]="selectedMonth" (selectionChange)="onMonthChange($event)">
+      <mat-option *ngFor="let month of months" [value]="month.value">{{ month.viewValue }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <ngx-charts-pie-chart
+    [results]="pieChartData"
+    [legend]="true"
+    [doughnut]="false">
+  </ngx-charts-pie-chart>
+</div>
+
+<div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <!-- Columns definition -->
+  </table>
+  <mat-paginator [length]="totalTransactions" [pageSize]="25" (page)="onPageChange($event)"></mat-paginator>
+</div>

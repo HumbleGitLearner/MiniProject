@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { cDialogBoxComponent } from "../services/cdialog.component";
-import { AuthService } from '../services/auth.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'recover',
@@ -72,6 +72,7 @@ export class RecoverComponent implements OnInit {
               ],
             },
           });
+          this.router.navigate(['/recover']);
         }
       );
   }

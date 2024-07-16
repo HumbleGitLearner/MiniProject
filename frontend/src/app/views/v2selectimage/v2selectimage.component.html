@@ -1,7 +1,6 @@
 <div class="container mt-4">
   <h3>File Upload</h3>
   <form [formGroup]="imageForm" (ngSubmit)="onSubmit()" class="responsive-form">
-    <!-- Left Side: File Input and Image Preview -->
     <div class="left-side" fxFlex="100" fxFlex.md="50">
       <input type="file" accept="image/jpeg" (change)="onFileSelected($event)" style="display: none;" #fileInput>
       <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
@@ -13,7 +12,6 @@
       </div>
     </div>
 
-    <!-- Right Side: Form Fields -->
     <div class="right-side" fxFlex="100" fxFlex.md="50">
       <mat-form-field appearance="fill">
         <mat-label>Category</mat-label>
@@ -39,7 +37,6 @@
       </mat-form-field>
     </div>
 
-    <!-- Center Bottom: Upload Button -->
     <div class="upload-button-container">
       <button mat-raised-button color="primary" type="submit" [disabled]="!photoPreview">Upload</button>
     </div>

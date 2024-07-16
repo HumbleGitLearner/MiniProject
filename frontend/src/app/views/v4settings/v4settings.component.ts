@@ -81,7 +81,6 @@ export class V4SettingsComponent implements OnInit {
   updateProfile(): void {
     if (this.editUserForm.valid) {
       const profileData = this.editUserForm.getRawValue();
-      console.error("AAAA", profileData);
       this.userService.updateUserProfile(profileData).subscribe(
         () => {
             const dialogRef = this.dialog.open(cDialogBoxComponent, {

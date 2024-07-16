@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, switchMap } from 'rxjs';
-
-import { JwtAuthStrategy } from './jwt-auth.strategy';
+import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
 import { config } from './config';
 import { User } from '../models/user';
 

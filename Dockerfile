@@ -58,7 +58,7 @@ ENTRYPOINT SERVER_PORT=${PORT} java -jar app.jar
 
 # build docker file
 # >> docker build -t leqing92/day36-giphy:v1
-# docker build –t dockeryh902/miniproject:v1 .
+# docker build -t dockeryh902/miniproject:v1.2 .
 
 # run docker
-# >> docker run -d -p 8080:8080 -e GIPHY_KEY=tmYYz3vSBNVJN5EkzU5snDyB54qTXSVe dockeryh902/miniproject:v1
+# >> docker run -d -p 8080:8080 -e GIPHY_KEY=tmYYz3vSBNVJN5EkzU5snDyB54qTXSVe dockeryh902/miniproject:v1.2

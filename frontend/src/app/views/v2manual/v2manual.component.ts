@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Expense, CatType, PmtsType } from '../../models/expense';
 import { ExpenseServices } from '../../services/expense.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { cDialogBoxComponent } from '../../services/cdialog.component';
-import { JwtAuthStrategy } from '../../services/jwt-auth.strategy';
+import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
+import {
+  lessThanToday,
+  greaterThanZeroValidator,
+} from '../../services/custom-validator';
 
 @Component({
   selector: 'v2manual',
@@ -48,7 +52,7 @@ export class V2ManualComponent implements OnInit {
     'actions',
   ];
 
-  constructor(
+    constructor(
     private formBuilder: FormBuilder,
     private expenseService: ExpenseServices,
     private dialog: MatDialog,
@@ -60,21 +64,21 @@ export class V2ManualComponent implements OnInit {
         this.uid = user.pemToken;
       }
     });
+  }
+
+  ngOnInit(): void {
     this.expenseForm = this.formBuilder.group({
       userId: [this.uid, Validators.required],
       fileUrl: [''],
       payer: [''],
-      trxTime: [this.today, Validators.required],
-      total: [0, Validators.required],
+      trxTime: [new Date(), [Validators.required, lessThanToday]],
+      total: [0, [Validators.required, greaterThanZeroValidator]],
       category: ['OUTFOOD', Validators.required],
       platform: ['GRAB'],
       merchant: ['', Validators.required],
       consumer: [''],
       paymentType: ['CREDIT', Validators.required],
     });
-  }
-
-  ngOnInit(): void {
     this.loadRecentExpenses();
   }
 
@@ -149,14 +153,14 @@ export class V2ManualComponent implements OnInit {
           },
         });
       }
-    };
+    }
   }
 
   editExpense(expense: Expense) {
-      this.currentExpenseId = expense.id;
-      this.expenseForm.patchValue(expense);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    this.currentExpenseId = expense.id;
+    this.expenseForm.patchValue(expense);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   confirmDelete(expense: Expense) {
     const dialogRef = this.dialog.open(cDialogBoxComponent, {
@@ -174,12 +178,12 @@ export class V2ManualComponent implements OnInit {
       }
     });
   }
-    
+
   deleteExpense(expense: Expense) {
     this.expenseService.deleteExpense(expense.id!).subscribe({
       next: () => {
         console.log('Expense deleted successfully');
-        this.loadRecentExpenses(); 
+        this.loadRecentExpenses();
       },
       error: (error) => {
         const dialogRef = this.dialog.open(cDialogBoxComponent, {
@@ -189,8 +193,8 @@ export class V2ManualComponent implements OnInit {
         });
       },
     });
-  };
-    
+  }
+
   resetForm() {
     this.expenseForm.reset();
     this.currentExpenseId = null;
@@ -200,5 +204,5 @@ export class V2ManualComponent implements OnInit {
     this.expenseForm.get('category')?.setValue('OUTFOOD');
     this.expenseForm.get('platform')?.setValue('GRAB');
     this.expenseForm.get('paymentType')?.setValue('CREDIT');
-  }; 
+  }
 }

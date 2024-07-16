@@ -1,86 +1,42 @@
-import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { V3ReportsService } from './v3reports.service';
+import { Component } from '@angular/core';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
-  selector: 'app-v3reports',
+  selector: 'app-expenses',
   templateUrl: './v3reports.component.html',
-  styleUrl: './v3reports.component.css',
+  styleUrls: ['./v3reports.component.css'],
 })
-export class V3ReportsComponent implements OnInit {
-  displayedColumns: string[] = ['date', 'category', 'amount'];
-  weeklyExpenses = new MatTableDataSource<any>([]);
-  monthlyExpenses = new MatTableDataSource<any>([]);
-  yearlyExpenses = new MatTableDataSource<any>([]);
+export class V3ReportsComponent {
+  monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  currentMonth: number = new Date().getMonth() + 1;
+  last1Month: number = this.currentMonth - 1;
+  last2Month: number = this.currentMonth - 2;
 
-  weeklyBarChartData!: any[];
-  monthlyBarChartData!: any[];
-  yearlyBarChartData!: any[];
+  charMon = this.monthNames[this.currentMonth - 1];
+  charL1Mon = this.monthNames[this.last1Month - 1];
+  charL2Mon = this.monthNames[this.last2Month - 1];
+  all: number = 24;
 
-  weeklyPieChartData!: any[];
-  monthlyPieChartData!: any[];
-  yearlyPieChartData!: any[];
+  generatePDF(): void {
+    const doc = new jsPDF();
 
-  view: [number, number] = [700, 400];
+    doc.text('Expenses Report', 10, 10);
+    // Add charts and tables as needed
 
-  // options for charts
-  showLegend: boolean = true;
-  showLabels: boolean = true;
-  explodeSlices: boolean = false;
-  doughnut: boolean = false;
-
-  constructor(private expenseService: V3ReportsService) {}
-
-  ngOnInit(): void {
-    this.loadWeeklyExpenses();
-    this.loadMonthlyExpenses();
-    this.loadYearlyExpenses();
-  }
-
-  loadWeeklyExpenses() {
-    const expenses = this.expenseService.getWeeklyExpenses();
-    this.weeklyExpenses.data = expenses;
-    this.weeklyBarChartData = [
-      {
-        name: 'Weekly Expenses',
-        series: expenses.map((exp) => ({ name: exp.date, value: exp.amount })),
-      },
-    ];
-    this.weeklyPieChartData = this.transformToPieData(expenses);
-  }
-
-  loadMonthlyExpenses() {
-    const expenses = this.expenseService.getMonthlyExpenses();
-    this.monthlyExpenses.data = expenses;
-    this.monthlyBarChartData = [
-      {
-        name: 'Monthly Expenses',
-        series: expenses.map((exp) => ({ name: exp.date, value: exp.amount })),
-      },
-    ];
-    this.monthlyPieChartData = this.transformToPieData(expenses);
-  }
-
-  loadYearlyExpenses() {
-    const expenses = this.expenseService.getYearlyExpenses();
-    this.yearlyExpenses.data = expenses;
-    this.yearlyBarChartData = [
-      {
-        name: 'Yearly Expenses',
-        series: expenses.map((exp) => ({ name: exp.date, value: exp.amount })),
-      },
-    ];
-    this.yearlyPieChartData = this.transformToPieData(expenses);
-  }
-
-  transformToPieData(expenses: any[]) {
-    const categories = expenses.reduce((acc, exp) => {
-      acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
-      return acc;
-    }, {});
-    return Object.keys(categories).map((key) => ({
-      name: key,
-      value: categories[key],
-    }));
+    doc.save('expenses-report.pdf');
   }
 }

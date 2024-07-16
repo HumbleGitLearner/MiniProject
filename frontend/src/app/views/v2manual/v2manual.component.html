@@ -8,6 +8,10 @@
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
+      <mat-error 
+        *ngIf="expenseForm.controls['trxTime'].errors?.['lessThanToday'] && (expenseForm.controls['trxTime'].dirty || expenseForm.controls['trxTime'].touched)">
+        Transaction date cannot be in future date!
+      </mat-error>           
     </div>
 
     <div class="form-group half-widths">
@@ -30,7 +34,11 @@
       <mat-form-field appearance="fill" class="half-width">
         <mat-label>Total</mat-label>
         <input matInput formControlName="total" type="number" required>
-        <mat-error *ngIf="expenseForm.controls['total'].touched && expenseForm.controls['total'].hasError('required')">Total is <strong>required</strong></mat-error>        
+        <mat-error *ngIf="expenseForm.controls['total'].touched && expenseForm.controls['total'].hasError('required')">Total is <strong>required</strong></mat-error>
+        <mat-error 
+        *ngIf="expenseForm.controls['total'].errors?.['greaterThanZeroValidator'] && (expenseForm.controls['total'].dirty || expenseForm.controls['total'].touched)">
+        Total must be greater than 0!
+      </mat-error>   
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="half-width">
@@ -43,7 +51,7 @@
     </div>
 
     <div class="form-group">
-      <button mat-raised-button color="primary" type="submit">{{ currentExpenseId ? 'Edit Expense' : 'Add New Expense' }}</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!expenseForm.valid">{{ currentExpenseId ? 'Edit Expense' : 'Add New Expense' }}</button>
     </div>
   </form>
 

@@ -25,7 +25,7 @@ public class Receipt implements java.io.Serializable{
     @NotBlank(message = "userId is mandatory")
     private int userId=0;
 
-    private String fileUrl;
+    private String fileUrl; //a hex string of the ObjectId of the file in MongoDB
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime uploadTime;

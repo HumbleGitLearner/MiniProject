@@ -1,5 +1,6 @@
 package nus.mini.backend.exceptions;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.DateTimeException;
 import java.util.HashMap;
@@ -27,6 +28,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
         logger.error("User not found: " + ex.getMessage(), ex);
         return new ResponseEntity<>("User not found: " + ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> handleIOException(IOException ex) {
+        logger.error("IO error:"+ex.getMessage(), ex);
+        return new ResponseEntity<>("IO error: " + ex.getMessage()
+                            , HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // @ExceptionHandler(EmptyResultDataAccessException.class) not a runtime error
@@ -60,7 +67,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex){
         logger.error("Illegal Argument:"+ex.getMessage(), ex);
-        return new ResponseEntity<>("Input MonthlyStatement is null:"+ex.getMessage(), 
+        return new ResponseEntity<>("Illegal Argument:"+ex.getMessage(), 
             HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

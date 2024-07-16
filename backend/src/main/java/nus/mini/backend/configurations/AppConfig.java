@@ -34,8 +34,8 @@ public class AppConfig {
     public AmazonS3 createS3Client(){
         BasicAWSCredentials cred= new BasicAWSCredentials(accessKey, secretKey);
         EndpointConfiguration ep = new EndpointConfiguration(endPoint, endPointRegion);
-        System.out.println("AppConfig>>> " + ep.getServiceEndpoint());
-        System.out.println("AppConfig>>> " + ep.getSigningRegion());
+      //  System.out.println("AppConfig>>> " + ep.getServiceEndpoint());
+      //  System.out.println("AppConfig>>> " + ep.getSigningRegion());
         return AmazonS3ClientBuilder.standard()
             .withEndpointConfiguration(ep)
             .withCredentials(new AWSStaticCredentialsProvider(cred))

@@ -17,9 +17,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
 import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.result.UpdateResult;
 
@@ -58,16 +60,33 @@ public class MongoDBRepository {
 		}
 	}	
 
-	public byte[] downloadReceipt(String id) throws IOException {
-	    GridFsResource gridFsResource = gridFsTemplate.getResource(id);
-		byte[] content= null;
-	    if (gridFsResource != null) {
-			try(InputStream inputStream = gridFsResource.getInputStream()){
-				content= inputStream.readAllBytes();
-			}	
-		}
-		return content;
-	}
+	//db.getCollection("fs.files").find({ "filename": name })
+	public byte[] downloadReceipt(String name) throws IOException {
+        GridFSFile gridFSFile = gridFsTemplate.findOne(
+				Query.query(Criteria.where("filename").is(name)));
+	//	System.out.println("gridFSFile: "+gridFSFile);
+        if (gridFSFile == null){
+            return null;
+        }        
+        GridFsResource gridFsResource = gridFsTemplate.getResource(gridFSFile);
+	//	System.out.println("gridFsResource: "+gridFsResource);
+        byte[] content = null;
+        if (gridFsResource != null) {
+            try (InputStream inputStream = gridFsResource.getInputStream()) {
+                content = inputStream.readAllBytes();
+            }
+        }
+        return content;
+    }
+
+	public String getContentType(String name) {
+        GridFSFile gridFSFile = gridFsTemplate.findOne(
+				Query.query(Criteria.where("filename").is(name)));
+        if (gridFSFile != null && gridFSFile.getMetadata() != null) {
+            return gridFSFile.getMetadata().getString("_contentType");
+        }
+        return MediaType.APPLICATION_OCTET_STREAM_VALUE; // default if not found
+    }
 
     public MonthlyStatement save(MonthlyStatement statement) {
         return template.save(statement);

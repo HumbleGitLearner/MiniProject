@@ -11,6 +11,7 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
 import { MatListModule } from "@angular/material/list";
+import { MatRadioModule } from '@angular/material/radio';
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatTableModule } from "@angular/material/table";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -21,11 +22,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogActions, MatDialogContent } from '@angular/material/dialog';
-
-import { SnackBarComponent } from "./snackbar.component";
-//import { PeriodSelectorComponent } from "./period-selector.component";
-//import { ExpenseCategoryApi } from "./expenseCategory.api";
-
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   imports: [
@@ -51,12 +48,12 @@ import { SnackBarComponent } from "./snackbar.component";
     MatCheckboxModule,
     MatDialogActions,
     MatDialogContent,
+    MatRadioModule,
+    MatPaginatorModule,
   ],
-  declarations: [SnackBarComponent],
+  declarations: [],
   exports: [
     CommonModule,
-  //  PeriodSelectorComponent,
-    SnackBarComponent,
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
@@ -79,6 +76,8 @@ import { SnackBarComponent } from "./snackbar.component";
     MatDialogActions,
     MatDialogContent,
     MatNativeDateModule,
+    MatRadioModule,
+    MatPaginatorModule,
   ],
   providers: [MatDatepickerModule, MatNativeDateModule],
 })

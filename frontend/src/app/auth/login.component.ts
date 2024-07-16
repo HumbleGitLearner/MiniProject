@@ -3,9 +3,10 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { Router} from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 
-import { AuthService } from "../services/auth.service";
-import { User } from "../models/user";
+import { AuthService } from "./services/auth.service";
 import { cDialogBoxComponent } from "../services/cdialog.component";
+import { Login } from "./states/actions/auth.actions";
+import { Store } from "@ngxs/store";
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private store: Store
   ) {}
 
   ngOnInit() {
@@ -35,32 +37,36 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    const user: User =
-    {
-      id: null,
-      email: this.lform['email'].value,
-      password: this.lform['password'].value,
-      secret: "",
-      givenName: "",
-      lastName: "",
-      loginType: 'LOCAL',
-      mobile: "",
-      notifTelegram: false,
-      notifEmail: false,
-      scanEmail: false,
-    };
-    
-    this.authService.login(user)
+    const user: any =
+      {
+        id: 0,
+        email: this.lform['email'].value,
+        password: this.lform['password'].value,
+        secret: '',
+        givenName: '',
+        lastName: '',
+        loginType: 'LOCAL',
+        mobile: '',
+        notifTelegram: false,
+        notifEmail: false,
+        scanEmail: false,
+      };
+    this.store
+      .dispatch(new Login(user)) //this.authService.login(user)
       .subscribe(
         (data) => {
           this.router.navigate([this.authService.HOME_PATH]);
         },
         (error) => {
-          const dialogRef = this.dialog.open(cDialogBoxComponent,
-            { data: { message: ['Login Error', 'Incorrect email or password. Please try again.'] } }
-          );
+          const dialogRef = this.dialog.open(cDialogBoxComponent, {
+            data: {
+              message: [
+                'Login Error',
+                'Incorrect email or password. Please try again.',
+              ],
+            },
+          });
         }
       );
   }
-
 }

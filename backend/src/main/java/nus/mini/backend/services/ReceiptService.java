@@ -58,9 +58,9 @@ public class ReceiptService {
         );
     }
 
-
   
     public int save(ReceiptDTO upload) throws DataAccessException, SQLException {
+      //  System.out.println("ReceiptService: save: "+upload);
         return receiptRepository.save(toEntity(upload));   
     }
  

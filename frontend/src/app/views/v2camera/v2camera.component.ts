@@ -1,13 +1,18 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Camera, CameraResultType } from '@capacitor/camera';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
 import { ExpenseServices } from '../../services/expense.service';
-import { config } from '../../services/config';
-import { JwtAuthStrategy } from '../../services/jwt-auth.strategy';
+import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
 import { MatDialog } from '@angular/material/dialog';
 import { cDialogBoxComponent } from '../../services/cdialog.component';
-
+import { Expense, CatType, PmtsType } from '../../models/expense';
+import { Router } from '@angular/router';
+import {
+  lessThanToday,
+  greaterThanZeroValidator,
+} from '../../services/custom-validator';
 
 @Component({
   selector: 'camera-upload',
@@ -19,15 +24,73 @@ export class V2CameraComponent implements OnInit {
   photo: string | null | undefined = null;
   uid: number = 0;
   today = new Date();
+
+  expenseForm!: FormGroup;
+  recentExpenses: Expense[] = [];
+  currentExpenseId: number | null | undefined = null;
+  categories: CatType[] = [
+    'OUTFOOD',
+    'GROCERY',
+    'TRANSPORT',
+    'EDUCATION',
+    'CLOTHING',
+    'ENTERTAINMENT',
+    'HEALTH',
+    'APPLIANCES',
+    'OTHERS',
+  ];
+  paymentTypes: PmtsType[] = [
+    'CASH',
+    'CREDIT',
+    'DEBIT',
+    'PAYNOW',
+    'PAYLAH',
+    'PAYPAL',
+    'GOOGLEPAY',
+    'APPLEPAY',
+  ];
+  displayedColumns: string[] = [
+    'trxTime',
+    'merchant',
+    'category',
+    'total',
+    'paymentType',
+    'fileUrl',
+    'actions',
+  ];
+
   constructor(
+    private formBuilder: FormBuilder,
     private http: HttpClient,
     private ExpenseServices: ExpenseServices,
     private auth: JwtAuthStrategy,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private router: Router,
+  ) {
+      this.auth.getCurrentUser().subscribe((user) => {
+      if (user) {
+        this.uid = user.pemToken;
+      }
+    });
 
+   }
+    
   ngOnInit(): void {
     this.startCamera();
+    this.expenseForm = this.formBuilder.group({
+      userId: [this.uid, Validators.required],
+      fileUrl: [''],
+      payer: [''],
+      trxTime: [new Date(), [Validators.required, lessThanToday]],
+      total: [0, [Validators.required, greaterThanZeroValidator]],
+      category: ['OUTFOOD', Validators.required],
+      platform: ['GRAB'],
+      merchant: ['', Validators.required],
+      consumer: [''],
+      paymentType: ['CREDIT', Validators.required],
+    });
+    this.loadRecentExpenses();
+    
   }
 
   async startCamera() {
@@ -61,7 +124,7 @@ export class V2CameraComponent implements OnInit {
       canvas.height = video.videoHeight;
       const context = canvas.getContext('2d');
       context!.drawImage(video, 0, 0, canvas.width, canvas.height);
-      this.photo = canvas.toDataURL('image/png');
+      this.photo = canvas.toDataURL('image/jpeg');
       const stream = video.srcObject as MediaStream;
       const tracks = stream.getTracks();
       tracks.forEach((track) => track.stop());
@@ -88,5 +151,130 @@ export class V2CameraComponent implements OnInit {
         }
       );
     }
+  }
+  /////////////////////////////////////////
+
+  loadRecentExpenses() {
+    this.ExpenseServices.getRecentExpenses().subscribe({
+      next: (expenses) => {
+        this.recentExpenses = expenses.slice(0, 25);
+      },
+      error: (error) => {
+        const dialogRef = this.dialog.open(cDialogBoxComponent, {
+          data: {
+            message: ['Add Expense', `Error loading recent expenses: ${error}`],
+          },
+        });
+        dialogRef.afterClosed().subscribe((result: boolean) => {
+          if (result) {
+            this.router.navigate(['/app/home']);
+          }
+        });
+      },
+    });
+  }
+
+  onSubmit() {
+    if (this.expenseForm.valid) {
+      const expense: Expense = this.expenseForm.value;
+
+      if (this.currentExpenseId !== null) {
+        expense.id = this.currentExpenseId;
+        this.ExpenseServices.updateExpense(expense).subscribe({
+          next: (response) => {
+            console.log('Expense updated successfully', response);
+            this.resetForm();
+            this.loadRecentExpenses();
+          },
+          error: (error) => {
+            const dialogRef = this.dialog.open(cDialogBoxComponent, {
+              data: {
+                message: ['Edit Expense', `Error updating expense: ${error}`],
+              },
+            });
+            dialogRef.afterClosed().subscribe((result: boolean) => {
+              if (result) {
+                this.router.navigate(['/app/home']);
+              }
+            });
+          },
+        });
+      } else {
+        this.ExpenseServices.addExpense(expense).subscribe({
+          next: (response) => {
+            console.log('Expense added successfully', response);
+            this.auth.getCurrentUser().subscribe((user) => {
+              if (user) {
+                this.uid = user.pemToken;
+              }
+            });
+            this.resetForm();
+            this.loadRecentExpenses();
+          },
+          error: (error) => {
+            const dialogRef = this.dialog.open(cDialogBoxComponent, {
+              data: {
+                message: ['Add Expense', `Error adding expense: ${error}`],
+              },
+            });
+            dialogRef.afterClosed().subscribe((result: boolean) => {
+              if (result) {
+                this.router.navigate(['/app/home']);
+              }
+            });
+          },
+        });
+      }
+    }
+  }
+
+  editExpense(expense: Expense) {
+    this.currentExpenseId = expense.id;
+    this.expenseForm.patchValue(expense);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  confirmDelete(expense: Expense) {
+    const dialogRef = this.dialog.open(cDialogBoxComponent, {
+      data: {
+        message: [
+          'Delete Expense',
+          `Are you sure you want to delete this expense?`,
+        ],
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.deleteExpense(expense);
+      }
+    });
+  }
+
+  deleteExpense(expense: Expense) {
+    this.ExpenseServices.deleteExpense(expense.id!).subscribe({
+      next: () => {
+        console.log('Expense deleted successfully');
+        this.loadRecentExpenses();
+      },
+      error: (error) => {
+        const dialogRef = this.dialog.open(cDialogBoxComponent, {
+          data: {
+            message: ['Delete Expense', `Error deleting expense: ${error}`],
+          },
+        });
+      },
+    });
+  }
+
+  resetForm() {
+    this.expenseForm.reset();
+    this.currentExpenseId = null;
+    this.expenseForm.get('userId')?.setValue(this.uid);
+    this.expenseForm.get('trxTime')?.setValue(this.today);
+    this.expenseForm.get('total')?.setValue(0);
+    this.expenseForm.get('category')?.setValue('OUTFOOD');
+    this.expenseForm.get('platform')?.setValue('GRAB');
+    this.expenseForm.get('paymentType')?.setValue('CREDIT');
   }
 }

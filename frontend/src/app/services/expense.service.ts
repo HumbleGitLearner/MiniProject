@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, switchMap } from 'rxjs';
-import { JwtAuthStrategy } from './jwt-auth.strategy';
+import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
 import { config } from './config';
 import { Expense } from '../models/expense';
 import { MatDialog } from '@angular/material/dialog';
-import { cDialogBoxComponent } from './cdialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +33,7 @@ export class ExpenseServices {
     return this.auth.getCurrentUser().pipe(
       switchMap((user) => {
         return this.http.get<Expense[]>(
-          `${config['expensesUrl']}/user/${user.pemToken}/limit?limit=12`
+          `${config['expensesUrl']}/user/${user.pemToken}/limit?limit=25`
         );
       })
     );
@@ -69,9 +68,7 @@ export class ExpenseServices {
         if (user) {
           uid = user.pemToken;
           return this.http.post(
-            `${config['expensesUrl']}/image/${uid}`,
-            formData
-          );
+            `${config['expensesUrl']}/upload/${uid}`, formData);
         } else {
           throw new Error('User not found');
         }

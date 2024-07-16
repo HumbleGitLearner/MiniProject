@@ -97,14 +97,14 @@
           <input
             matInput
             type="tel"
-            placeholder="Enter mobile number (e.g. 1234 5678)"
+            placeholder="Enter mobile number (e.g. 12345678)"
             autocomplete="off"
             formControlName="mobile"
-            pattern="\d{4} \d{4}"
+            pattern="\d{4}\d{4}"
             required
           />
           <mat-error *ngIf="signupForm.controls['mobile'].touched && signupForm.controls['mobile'].hasError('required')">Mobile number is <strong>required</strong></mat-error>
-          <mat-error *ngIf="signupForm.controls['mobile'].touched && signupForm.controls['mobile'].hasError('pattern')">Mobile number must be <strong>8 digits</strong> long (e.g. 1234 5678)</mat-error>
+          <mat-error *ngIf="signupForm.controls['mobile'].touched && signupForm.controls['mobile'].hasError('pattern')">Mobile number must be <strong>8 digits</strong> long (e.g. 12345678)</mat-error>
         </mat-form-field>
       </div>
       <div class="table-container">

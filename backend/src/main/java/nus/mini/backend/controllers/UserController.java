@@ -3,7 +3,9 @@ package nus.mini.backend.controllers;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import nus.mini.backend.configurations.JwtTokenUtil;
 import nus.mini.backend.models.UserDTO;
 import nus.mini.backend.models.UserData;
 import nus.mini.backend.services.UserService;
@@ -34,6 +37,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtTokenUtil jwtHelper;
  
     @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() 
@@ -82,6 +88,18 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }        
         if (user.getPassword().equals(userDto.get().getPassword())){
+
+         //   Map<String, Object> newdata = new HashMap();
+            Map<String, Object> newdata = new HashMap<>();
+            newdata.put("email", userDto.get().getEmail());
+            newdata.put("given_name", userDto.get().getEmail());
+            newdata.put("family_name", userDto.get().getEmail());
+            String subject = "PEM";
+            String newtoken = this.jwtHelper.doGenerateToken(newdata, subject);
+            userDto.get().setToken(newtoken);
+            UserDTO toSaveDto = userDto.get();
+            userService.update(toSaveDto);
+
             return ResponseEntity.ok(userDto.get());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -91,7 +109,7 @@ public class UserController {
     @PostMapping("/recover")
     public ResponseEntity<UserDTO> recoverPWd(@Valid @RequestBody UserDTO user) 
                                     throws DataAccessException, SQLException {
-        System.out.println("recovering password>>> " + user.getEmail());
+     //   System.out.println("recovering password>>> " + user.getEmail());
         Optional<UserDTO>userOpt= userService.findByEmail(user.getEmail());
         if (userOpt.isEmpty()){
             return ResponseEntity.notFound().build();

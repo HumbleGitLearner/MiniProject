@@ -1,3 +1,4 @@
+<div>
 <div class="camera-container">
   <div class="camera-preview" *ngIf="!photo">
     <video #videoElement autoplay></video>
@@ -12,3 +13,104 @@
     <button mat-raised-button color="primary" (click)="takePhoto()">Take Photo</button>
   </ng-template>
 </div>
+
+<form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Transaction Time</mat-label>
+        <input matInput formControlName="trxTime" [matDatepicker]="picker" required>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <mat-error 
+        *ngIf="expenseForm.controls['trxTime'].errors?.['lessThanToday'] && (expenseForm.controls['trxTime'].dirty || expenseForm.controls['trxTime'].touched)">
+        Transaction date cannot be in future date!
+      </mat-error>           
+    </div>
+
+    <div class="form-group half-widths">
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Merchant</mat-label>
+        <input matInput formControlName="merchant">
+        <mat-error *ngIf="expenseForm.controls['merchant'].touched && expenseForm.controls['merchant'].hasError('required')">Merchant is <strong>required</strong></mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="half-width category-field">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category" required>
+          <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="expenseForm.controls['category'].touched && expenseForm.controls['category'].hasError('required')">Category is <strong>required</strong></mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-group half-widths">
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Total</mat-label>
+        <input matInput formControlName="total" type="number" required>
+        <mat-error *ngIf="expenseForm.controls['total'].touched && expenseForm.controls['total'].hasError('required')">Total is <strong>required</strong></mat-error>
+        <mat-error 
+        *ngIf="expenseForm.controls['total'].errors?.['greaterThanZeroValidator'] && (expenseForm.controls['total'].dirty || expenseForm.controls['total'].touched)">
+        Total must be greater than 0!
+      </mat-error>   
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Payment Type</mat-label>
+        <mat-select formControlName="paymentType" required>
+          <mat-option *ngFor="let type of paymentTypes" [value]="type">{{ type }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="expenseForm.controls['paymentType'].touched && expenseForm.controls['paymentType'].hasError('required')">Payment Type is <strong>required</strong></mat-error>                
+      </mat-form-field>
+    </div>
+
+    <div class="form-group">
+      <button mat-raised-button color="primary" type="submit" [disabled]="!expenseForm.valid">{{ currentExpenseId ? 'Edit Expense' : 'Add New Expense' }}</button>
+    </div>
+  </form>
+
+</div>
+
+  <h2>Recent Uploaded (Camera or File) Transactions</h2>
+  <table mat-table [dataSource]="recentExpenses" class="mat-elevation-z8 full-width">
+    <ng-container matColumnDef="trxTime">
+      <th mat-header-cell *matHeaderCellDef>Transaction Date</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.trxTime | date: 'shortDate' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="merchant">
+      <th mat-header-cell *matHeaderCellDef>Merchant</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.merchant }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="category" class="category-field">
+      <th mat-header-cell *matHeaderCellDef>Category</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.category }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+      <th mat-header-cell *matHeaderCellDef>Total</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.total | currency }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="paymentType">
+      <th mat-header-cell *matHeaderCellDef>Payment Type</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.paymentType }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="fileUrl">
+      <th mat-header-cell *matHeaderCellDef>File</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.fileUrl }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let expense">
+        <button mat-button (click)="editExpense(expense)">Edit</button>
+        <button mat-button (click)="confirmDelete(expense)">Delete</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>

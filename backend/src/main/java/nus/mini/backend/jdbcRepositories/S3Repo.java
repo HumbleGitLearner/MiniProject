@@ -46,7 +46,7 @@ public class S3Repo {
             putRequest.withCannedAcl(CannedAccessControlList.PublicRead);
 
             PutObjectResult result = s3.putObject(putRequest);
-            System.out.println("PutObjectResult: " + result.getMetadata().toString());
+          //  System.out.println("PutObjectResult: " + result.getMetadata().toString());
 
         } catch (IOException e) {
             e.printStackTrace();

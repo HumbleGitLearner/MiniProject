@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;	
 
 @SpringBootApplication
-@EnableMongoRepositories(basePackages = "nus.mini.backend.mongodbRepositories")
+@EnableMongoRepositories(basePackages = "nus.mini.backend.mongodbrepositories")
 public class BackendApplication {
 
 	public static void main(String[] args) {

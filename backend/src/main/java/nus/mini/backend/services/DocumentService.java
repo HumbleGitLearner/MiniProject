@@ -28,17 +28,16 @@ public class DocumentService {
     //upload the file to MongoDB and create a ReceiptImage document
     public String saveReceiptImg(int userId, String fileName, 
                 String contentType, byte[] content) {
-        try{ //upload the file to MongoDB
+        try{ 
             ObjectId imgId= mongoRepo.saveReceiptImgTemp(fileName, contentType, content);
-            //create a ReceiptImage document
-            //rename the filename to the ObjectId of the file
+         //   System.out.println("imgId: "+imgId);
             ReceiptImage rpImg= ReceiptImage.builder()
                             ._id(imgId)
-                            .userId(userId)
-                            .fileName(fileName)
-                            .contentType(contentType)
+                            .user_id(userId)
+                            .file_name(fileName)
+                            .content_type(contentType)
                             .data(content)
-                            .createdDate(LocalDateTime.now())
+                            .created_date(LocalDateTime.now())
                             .build();
             receiptImgRepo.save(rpImg);  
             return imgId.toHexString();
@@ -47,16 +46,15 @@ public class DocumentService {
         }
     }
 
-    // public byte[] downloadReceipt(String id) {
-    //     return mongoRepo.downloadReceipt(id);
-    // }
+    public byte[] downloadReceipt(String fileName) throws IOException {
+      //  System.out.println("DocService: downloadReceipt: "+fileName);
+        return mongoRepo.downloadReceipt(fileName);
+    }
 
-	// byte[] content = receiptService.downloadReceipt(id);
-	// if (content == null) {
-	//     return ResponseEntity.notFound().build();
-	// }
-	// return ResponseEntity.ok(content);
-
+    public String getContentType(String fileName) throws IOException {
+      //  System.out.println("DocService: getContentType: "+fileName);
+        return mongoRepo.getContentType(fileName);
+    }
 
     public MonthlyStatement saveMonthlyStatement(MonthlyStatement stmt){
         return mongoRepo.save(stmt);

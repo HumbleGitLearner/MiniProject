@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './services/auth.guard';
+import { AuthGuard } from './auth/services/auth.guard';
 import { LayoutComponent } from './views/layout/layout.component';
-import { AppGuard } from './services/app.guard';
-import { LoginComponent } from './authviews/login.component';
-import { SignupComponent } from './authviews/signup.component';
-import { RecoverComponent } from './authviews/recover.component';
+import { AppGuard } from './auth/services/app.guard';
+import { LoginComponent } from './auth/login.component';
+import { SignupComponent } from './auth/signup.component';
+import { RecoverComponent } from './auth/recover.component';
 import { V1HomeComponent } from './views/v1home/v1home.component';
 import { V2CameraComponent } from './views/v2camera/v2camera.component';
 import { V2ManualComponent } from './views/v2manual/v2manual.component';

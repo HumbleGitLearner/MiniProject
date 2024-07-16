@@ -97,6 +97,7 @@ public class ReceiptRepository{
                 return pst;
             }
         }, keyHolder);
+      //  System.out.println("KeyHolder from ReceiptRepository: "+keyHolder.getKey());
         Number key= keyHolder.getKey();
         if (key==null) return 0;
         return key.intValue();
@@ -174,7 +175,7 @@ public class ReceiptRepository{
                 FIND_SUM_BY_USER_BTWN_TIME, BigDecimal.class,
                 new Object[]{userId, fromTime, toTime});
             if (result !=null) { return result;
-            } else { return new BigDecimal(0) ;}
+            } else { return new BigDecimal(0.0) ;}
         }
         } catch (EmptyResultDataAccessException ex){
             return new BigDecimal(0);

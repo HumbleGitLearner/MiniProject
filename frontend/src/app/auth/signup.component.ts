@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { AuthService } from "../services/auth.service";
+import { AuthService } from "./services/auth.service";
 import { CustomValidators } from "../services/custom-validator";
 import { MatDialog } from '@angular/material/dialog';
 import { cDialogBoxComponent } from '../services/cdialog.component';
@@ -30,7 +30,7 @@ export class SignupComponent implements OnInit {
         password: ['', Validators.required],
         passwordConfirm: ['', Validators.required],
         secret: ['', Validators.required],
-        mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{4} [0-9]{4}$/)]],
+        mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{4}[0-9]{4}$/)]],
         ischktelegram: [false, []],
         ischkemail: [false, []],
         ischkscanemail: [false, []],

@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nus.mini.backend.models.EnumTypes.CatType;
@@ -18,12 +19,13 @@ import nus.mini.backend.models.EnumTypes.PmtsType;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ReceiptDTO {
 
     private int id;
 
     @NotNull(message = "userId is mandatory")
-    private int userId=0;
+    private int userId;
 
     private String fileUrl;
 
@@ -36,7 +38,7 @@ public class ReceiptDTO {
     private LocalDateTime trxTime;
 
     @NotNull(message = "total is mandatory")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Total must be greater than zero")
+    @DecimalMin(value = "0.0", inclusive = true, message = "Total cannot be negative")
     private BigDecimal total;
 
     private CatType category;

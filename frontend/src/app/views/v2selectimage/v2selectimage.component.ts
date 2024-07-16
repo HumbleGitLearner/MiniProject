@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { v2SelectimageService } from './v2selectimage.service';
+import { v2SelectimageService } from '../../services/selectimage.service';
 
 @Component({
   selector: 'app-v2selectimage',
