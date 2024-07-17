@@ -5,6 +5,19 @@ import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
 import { config } from './config';
 import { Expense } from '../models/expense';
 import { MatDialog } from '@angular/material/dialog';
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'filterEmptyFileUrl',
+})
+export class FilterEmptyFileUrlPipe implements PipeTransform {
+  transform(items: any[], field: string): any[] {
+    if (!items) {
+      return [];
+    }
+    return items.filter((item) => item[field] && item[field].trim().length > 0);
+  }
+}
 
 @Injectable({
   providedIn: 'root',
@@ -50,30 +63,11 @@ export class ExpenseServices {
     );
   }
 
-  uploadImage(photo: string, uid: number): Observable<any> {
+  camuploadImage(photo: string, uid: number, imageName: string): Observable<any> {
     const blob = this.dataURItoBlob(photo);
     const formData = new FormData();
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const hours = String(today.getHours()).padStart(2, '0');
-    const minutes = String(today.getMinutes()).padStart(2, '0');
-    const seconds = String(today.getSeconds()).padStart(2, '0');
-    const imageName = `${year}${month}${day}${hours}${minutes}${seconds}`;
     formData.append('file', blob, imageName);
-
-    return this.auth.getCurrentUser().pipe(
-      switchMap((user) => {
-        if (user) {
-          uid = user.pemToken;
-          return this.http.post(
-            `${config['expensesUrl']}/upload/${uid}`, formData);
-        } else {
-          throw new Error('User not found');
-        }
-      })
-    );
+    return this.http.post(`${config['expensesUrl']}/upload/${uid}`, formData);
   }
 
   private dataURItoBlob(dataURI: string) {
@@ -86,4 +80,10 @@ export class ExpenseServices {
     }
     return new Blob([ab], { type: mimeString });
   }
+
+  seluploadImage(formData: FormData, uid:number): Observable<any> {
+    return this.http.post(`${config['expensesUrl']}/upload/${uid}`, formData);
+
+  }
+
 }

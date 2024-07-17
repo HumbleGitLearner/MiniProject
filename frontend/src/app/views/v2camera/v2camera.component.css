@@ -1,3 +1,22 @@
+.responsive-form {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.left-side, .right-side {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.left-side {
+  width: 50%;
+}
+
+.right-side {
+  width: 50%;
+}
+
 .camera-container {
   display: flex;
   flex-direction: column;
@@ -54,4 +73,13 @@ video {
 
 button {
   margin: 5px;
+}
+
+.dark-button {
+  background-color: #807d7d;
+  color: #fff;           
+}
+
+.dark-button:hover {
+  background-color: #683737; 
 }

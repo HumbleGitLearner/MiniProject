@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
 
 @Component({
   selector: 'app-expenses',
@@ -30,13 +28,4 @@ export class V3ReportsComponent {
   charL1Mon = this.monthNames[this.last1Month - 1];
   charL2Mon = this.monthNames[this.last2Month - 1];
   all: number = 24;
-
-  generatePDF(): void {
-    const doc = new jsPDF();
-
-    doc.text('Expenses Report', 10, 10);
-    // Add charts and tables as needed
-
-    doc.save('expenses-report.pdf');
-  }
 }

@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Uploaded Image Preview</h2>
+<mat-dialog-content>
+  <img
+    [src]="data.imageBlob"
+    alt="Image Preview"
+    (load)="onImageLoad()"
+    (error)="onImageError()"
+  />
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="okbtn()">OK</button>
+</mat-dialog-actions>

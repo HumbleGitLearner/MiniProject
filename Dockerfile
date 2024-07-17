@@ -13,7 +13,9 @@ COPY frontend/angular.json .
 COPY frontend/package*.json .
 COPY frontend/tsconfig*.json .
 COPY frontend/proxy.config.json .
+COPY frontend/ngsw-config.json .
 COPY frontend/src src
+
 
 # Install Modules
 # ci will use lock ver. but not the newest ver.
@@ -36,7 +38,8 @@ COPY backend/src src
 # Copy ng build angular file from stage=ngbuild at <frontend> workdir to static in /giphy SB
 # reminder to delete the static file copied from angular before build
 #COPY --from=ngbuild /client/dist/frontend/browser/ src/main/resources/static
-COPY --from=ngbuild /frontend/dist/client/ src/main/resources/static
+#COPY --from=ngbuild /frontend/dist/client/ src/main/resources/static
+COPY --from=ngbuild /frontend/dist/ src/main/resources/static
 
 # Generate target/server-0.0.1-SNAPSHOT.jar
 RUN chmod a+x mvnw
@@ -49,7 +52,6 @@ WORKDIR /app
 
 # remember to change the project name
 COPY --from=javabuild /backend/target/backend-0.0.1-SNAPSHOT.jar app.jar
-#COPY frontend/ngsw-config.json .
 
 ENV PORT=8080
 
@@ -58,7 +60,7 @@ ENTRYPOINT SERVER_PORT=${PORT} java -jar app.jar
 
 # build docker file
 # >> docker build -t leqing92/day36-giphy:v1
-# docker build -t dockeryh902/miniproject:v1.2 .
+# docker build -t dockeryh902/miniproject:v1.3 .
 
 # run docker
-# >> docker run -d -p 8080:8080 -e GIPHY_KEY=tmYYz3vSBNVJN5EkzU5snDyB54qTXSVe dockeryh902/miniproject:v1.2
+# >> docker run -d -p 8080:8080 -e GIPHY_KEY=tmYYz3vSBNVJN5EkzU5snDyB54qTXSVe dockeryh902/miniproject:v1.3

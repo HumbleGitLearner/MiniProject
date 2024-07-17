@@ -44,6 +44,9 @@ public class ReceiptController {
     @Autowired
     private DocumentService docService;
 
+    @Autowired
+    private ImgAIService imgAIService;
+
 
     //ToDo
     // @GetMapping("/download/{id}") //download receipt image files
@@ -144,19 +147,20 @@ public class ReceiptController {
              if (docIdHex == null) {
                 return ResponseEntity.internalServerError().build();
             }           
-            //calling Document AI API to extract text from the image
-            //create a new Receipt record in MySql
-           // System.out.println("UploadReceiptImg >>> docIdHex: "+docIdHex);
-            ReceiptDTO receipt = ReceiptDTO.builder( )
-                            .userId(userId)
-                            .fileUrl(filename)
-                            .uploadTime(LocalDateTime.now())
-                            .total(new BigDecimal(0.0))
-                            .trxTime(LocalDateTime.now())
-                            .category(EnumTypes.CatType.OTHER)
-                            .platform(EnumTypes.PltfmType.OTHER)
-                            .paymentType(EnumTypes.PmtsType.OTHER)
-                            .build();
+             //calling Document AI API to extract text from the image
+             //and create a Receipt record in MySql
+            System.out.println("uploadReceiptImg >>> docIdHex: "+docIdHex);
+           // int id= imgAIService.handleFileUpload(userId, filename, contentType, content);
+            ReceiptDTO receipt = ReceiptDTO.builder()
+                   .userId(userId)
+                   .fileUrl(filename)
+                   .uploadTime(LocalDateTime.now())
+                   .total(new BigDecimal(0.0))
+                   .trxTime(LocalDateTime.now())
+                   .category(EnumTypes.CatType.OTHER)
+                   .platform(EnumTypes.PltfmType.OTHER)
+                   .paymentType(EnumTypes.PmtsType.OTHER)
+                   .build();
           //  System.out.println("UploadReceiptImg >>> receipt: "+receipt.toString());
             int id = receiptService.save(receipt);
             return ResponseEntity.ok(id);

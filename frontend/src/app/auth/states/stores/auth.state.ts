@@ -15,8 +15,7 @@ export class AuthStateModel {
 @State<AuthStateModel>({
   name: 'auth',
   defaults: {
-    //  token: null,
-    //  uid: null,
+
     token: localStorage.getItem('pemauth.token') || null,
     uid: localStorage.getItem('pemauth.uid') || null,
     isAuthenticated: !!localStorage.getItem('pemauth.token'),

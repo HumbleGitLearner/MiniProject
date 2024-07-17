@@ -51,10 +51,11 @@ public class MongoDBRepository {
 		}
 	}
 
-	//returning HexString of the save receiptImg using GridFsTemplate
+	//returning ObjectId of the save receiptImg using GridFsTemplate
 	public ObjectId saveReceiptImgTemp(String fileName, 
 			String contentType, byte[] content)throws IOException  {
 		try(InputStream is = new ByteArrayInputStream(content)){
+			System.out.println("MongoDBRepository.saveReceiptImgTemp >>>>: "+fileName);
 			ObjectId id = gridFsTemplate.store(is, fileName, contentType);
 			return id;
 		}

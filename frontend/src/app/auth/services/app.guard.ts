@@ -7,6 +7,8 @@ import { AuthState } from '../states/stores/auth.state';
 import { AuthService } from './auth.service';
 import { JwtAuthStrategy } from "./jwt-auth.strategy";
 import { Glogin } from 'app/auth/states/actions/auth.actions';
+import { MatDialog } from '@angular/material/dialog';
+import { cDialogBoxComponent } from '../../services/cdialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -16,15 +18,16 @@ export class AppGuard implements CanActivate {
     private authService: AuthService,
     private router: Router,
     private store: Store,
-    private auth: JwtAuthStrategy,
+    private dialog: MatDialog,
+    private auth: JwtAuthStrategy
   ) {}
 
   canActivate(): Observable<boolean> {
-      return this.store.select(AuthState.hasToken).pipe(
+    return this.store.select(AuthState.hasToken).pipe(
       switchMap((hasToken) => {
         if (!hasToken) {
           this.router.navigate([this.authService.LOGIN_PATH]);
-          return of(false); 
+          return of(false);
         }
         return this.auth.getCurrentUser().pipe(
           switchMap((user) => {
@@ -50,25 +53,32 @@ export class AppGuard implements CanActivate {
                 .pipe(
                   switchMap((response) => {
                     this.store.dispatch(new Glogin(response));
-                    return of(true); 
+                    return of(true);
                   }),
                   catchError((error) => {
                     if (error.status === 409) {
-                    this.store.dispatch(new Glogin(error.error));                      
+                      this.store.dispatch(new Glogin(error.error));
                       return of(true);
                     } else {
-                      return of(false); 
+                      return of(false);
                     }
                   })
                 );
             }
-            return of(!!user && inputDate >= today); 
+            if (inputDate < today){
+              const dialogRef = this.dialog.open(cDialogBoxComponent, {
+                data: {
+                  message: ['Token Expired', 'Please sign in again.'],
+                },
+              });
+              this.router.navigate([this.authService.LOGIN_PATH]);
+            }
+            return of(!!user && inputDate >= today);
           }),
-          catchError(() => of(false)) 
+          catchError(() => of(false))
         );
       })
     );
   }
-
 }
 

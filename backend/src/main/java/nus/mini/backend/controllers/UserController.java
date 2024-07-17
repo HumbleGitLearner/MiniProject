@@ -88,8 +88,6 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }        
         if (user.getPassword().equals(userDto.get().getPassword())){
-
-         //   Map<String, Object> newdata = new HashMap();
             Map<String, Object> newdata = new HashMap<>();
             newdata.put("email", userDto.get().getEmail());
             newdata.put("given_name", userDto.get().getEmail());

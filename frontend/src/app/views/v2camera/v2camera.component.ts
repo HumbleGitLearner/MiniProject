@@ -1,18 +1,33 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  Pipe,
+  PipeTransform,
+} from '@angular/core';
 import { Camera, CameraResultType } from '@capacitor/camera';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
 import { ExpenseServices } from '../../services/expense.service';
 import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
 import { MatDialog } from '@angular/material/dialog';
 import { cDialogBoxComponent } from '../../services/cdialog.component';
+import { ImageDialogBoxComponent } from '../../services/imagedialog.component';
 import { Expense, CatType, PmtsType } from '../../models/expense';
 import { Router } from '@angular/router';
 import {
   lessThanToday,
   greaterThanZeroValidator,
 } from '../../services/custom-validator';
+import { config } from 'app/services/config';
 
 @Component({
   selector: 'camera-upload',
@@ -65,16 +80,15 @@ export class V2CameraComponent implements OnInit {
     private ExpenseServices: ExpenseServices,
     private auth: JwtAuthStrategy,
     private dialog: MatDialog,
-    private router: Router,
+    private router: Router
   ) {
-      this.auth.getCurrentUser().subscribe((user) => {
+    this.auth.getCurrentUser().subscribe((user) => {
       if (user) {
         this.uid = user.pemToken;
       }
     });
+  }
 
-   }
-    
   ngOnInit(): void {
     this.startCamera();
     this.expenseForm = this.formBuilder.group({
@@ -90,7 +104,6 @@ export class V2CameraComponent implements OnInit {
       paymentType: ['CREDIT', Validators.required],
     });
     this.loadRecentExpenses();
-    
   }
 
   async startCamera() {
@@ -138,21 +151,38 @@ export class V2CameraComponent implements OnInit {
 
   uploadPhoto() {
     if (this.photo) {
-      this.ExpenseServices.uploadImage(this.photo, this.uid).subscribe(
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const hours = String(today.getHours()).padStart(2, '0');
+      const minutes = String(today.getMinutes()).padStart(2, '0');
+      const seconds = String(today.getSeconds()).padStart(2, '0');
+      const imageName = `${this.uid}_${year}${month}${day}${hours}${minutes}${seconds}.jpeg`;
+      this.ExpenseServices.camuploadImage(
+        this.photo,
+        this.uid,
+        imageName
+      ).subscribe(
         (response) => {
           this.dialog.open(cDialogBoxComponent, {
-            data: { message: ['Upload Image', `Upload successful`] },
+            data: {
+              message: [
+                'Camera Upload Image',
+                `${imageName} : Upload successful`,
+              ],
+            },
           });
+          this.loadRecentExpenses();
         },
         (error) => {
           this.dialog.open(cDialogBoxComponent, {
-            data: { message: ['Upload Image', `Upload failed`] },
+            data: { message: ['Camera Upload Image', `Upload failed`] },
           });
         }
       );
     }
   }
-  /////////////////////////////////////////
 
   loadRecentExpenses() {
     this.ExpenseServices.getRecentExpenses().subscribe({
@@ -276,5 +306,20 @@ export class V2CameraComponent implements OnInit {
     this.expenseForm.get('category')?.setValue('OUTFOOD');
     this.expenseForm.get('platform')?.setValue('GRAB');
     this.expenseForm.get('paymentType')?.setValue('CREDIT');
+  }
+
+  openImagePreview(imageUrl: string): void {
+    const imageblob = `${config['expensesUrl']}/download?fileUrl=${imageUrl}`;
+    const dialogRef = this.dialog.open(ImageDialogBoxComponent, {
+      data: { imageBlob: imageblob },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log('Dialog closed with success');
+      } else {
+        console.log('Dialog closed with error');
+      }
+    });
   }
 }

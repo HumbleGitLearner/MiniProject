@@ -16,26 +16,18 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-//import { HttpErrorInterceptor } from './services/error.interceptor';
 import { AuthInterceptor } from './services/auth.interceptor';
 
-//import { JwtAuthStrategy } from './services/jwt-auth.strategy';
 import { JwtAuthStrategy } from './auth/services/jwt-auth.strategy';
 import { ExpenseServices } from './services/expense.service';
 import { UserServices } from './services/user.service';
 
-//import { HomeService } from './views/v1home/home.service';
-import { v2SelectimageService } from './services/selectimage.service';
-//import { V3ReportsService } from './views/v3reports/v3reports.service';
 import { HomeService } from './services/home.service';
-
-//import { BudgetApi } from './views/v1home/budget.api';
-//import { BudgetProgressComponent } from './views/v1home/budget-progress.component';
-//import { SummaryComponent } from './views/v1home/summary.component';
 
 import { LayoutComponent } from './views/layout/layout.component';
 import { LogoutDialogComponent } from './views/layout/logout.component';
 import { cDialogBoxComponent } from './services/cdialog.component';
+import { ImageDialogBoxComponent } from './services/imagedialog.component';
 
 import { LoginComponent } from './auth/login.component';
 import { SignupComponent } from './auth/signup.component';
@@ -53,11 +45,7 @@ import { NgxsModule } from '@ngxs/store';
 import { AuthState } from './auth/states/stores/auth.state';
 import { NgxsStoragePluginModule } from '@ngxs/storage-plugin';
 import { ServiceWorkerModule } from '@angular/service-worker';
-//import { ConfigProvider } from './services/config.provider';
-
-// import { MatButtonModule } from '@angular/material/button';
-// import { MatTabsModule } from '@angular/material/tabs';
-// import { MatTableModule } from '@angular/material/table';
+import { FilterEmptyFileUrlPipe } from './services/expense.service';
 
 @NgModule({
   declarations: [
@@ -69,10 +57,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     RecoverComponent,
     cDialogBoxComponent,
     LogoutDialogComponent,
-
-    //    SummaryComponent,
-    //    BudgetProgressComponent,
-
     V1HomeComponent,
     V2CameraComponent,
     V2ManualComponent,
@@ -80,6 +64,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     V3ReportsComponent,
     V4SettingsComponent,
     v3ReportTabComponent,
+    ImageDialogBoxComponent,
+    FilterEmptyFileUrlPipe
   ],
   imports: [
     BrowserModule,
@@ -96,17 +82,14 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     FormsModule,
     ReactiveFormsModule,
     IonicModule.forRoot(),
-    // MatButtonModule,
-    // MatTabsModule,
-    // MatTableModule,
     NgxChartsModule,
     NgxsModule.forRoot([AuthState]),
-//    ServiceWorkerModule.register('ngsw-worker.js', {
-//    enabled: !isDevMode(),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
-//      registrationStrategy: 'registerWhenStable:30000'
- //   }),
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
     // NgxsStoragePluginModule.forRoot({
     //   keys: ['auth.token','auth.uid','auth.isAuthenticated'],
     // }),
@@ -118,26 +101,13 @@ import { ServiceWorkerModule } from '@angular/service-worker';
       multi: true,
     },
     JwtAuthStrategy,
-
-    // HomeService,
-    // BudgetApi,
     CacheService,
-    //ConfigProvider,
-    //  HttpErrorHandler,
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: HttpErrorInterceptor,
-    //  multi: true,
-    // },
     provideAnimationsAsync(),
-    // V3ReportsService,
-    v2SelectimageService,
-
     ExpenseServices,
     UserServices,
     HomeService,
   ],
-  exports: [LayoutComponent],
+  exports: [LayoutComponent, FilterEmptyFileUrlPipe],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

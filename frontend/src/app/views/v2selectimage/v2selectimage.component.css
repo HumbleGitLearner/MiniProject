@@ -34,3 +34,12 @@
   justify-content: center;
   margin-top: 16px;
 }
+
+.dark-button {
+  background-color: #807d7d;
+  color: #fff;           
+}
+
+.dark-button:hover {
+  background-color: #683737; 
+}

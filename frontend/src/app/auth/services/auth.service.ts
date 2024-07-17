@@ -25,17 +25,11 @@ export class AuthService {
     private store: Store
   ) {}
 
-  // login(user: User): Observable<User> {
-  //   return this.http.post(`${URL}/login`, user);
-  // }
-
   login(user: User): Observable<User> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    console.error("CCCC--->>>")
     return this.http.post<any>(`${config['usersUrl']}/login`, user, { headers })
       .pipe(
         tap((data) => {
-          console.error('DDDDD--->>>');
           //          this.auth.doLoginUser({ token: data.token, id: data.id });
         }),
         catchError((error) => {
@@ -85,7 +79,6 @@ export class AuthService {
             id: 0,
             email: user.jwtToken.email,
             password: '',
-            //token: user.jwtToken,
             secret: '',
             givenName: user.jwtToken.given_name,
             lastName: user.jwtToken.family_name,

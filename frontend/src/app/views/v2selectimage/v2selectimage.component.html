@@ -1,6 +1,6 @@
 <div class="container mt-4">
   <h3>File Upload</h3>
-  <form [formGroup]="imageForm" (ngSubmit)="onSubmit()" class="responsive-form">
+  <form [formGroup]="imageForm" (ngSubmit)="uploadPhoto()" class="responsive-form">
     <div class="left-side" fxFlex="100" fxFlex.md="50">
       <input type="file" accept="image/jpeg" (change)="onFileSelected($event)" style="display: none;" #fileInput>
       <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
@@ -42,3 +42,52 @@
     </div>
   </form>
 </div>
+
+<h2>Recent Uploaded (Camera or File) Transactions</h2>
+  <table mat-table [dataSource]="recentExpenses | filterEmptyFileUrl : 'fileUrl'" class="mat-elevation-z8 full-width">
+    <ng-container matColumnDef="trxTime">
+      <th mat-header-cell *matHeaderCellDef>Transaction Date</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.trxTime | date: 'shortDate' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="merchant">
+      <th mat-header-cell *matHeaderCellDef>Merchant</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.merchant }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="category" class="category-field">
+      <th mat-header-cell *matHeaderCellDef>Category</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.category }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+      <th mat-header-cell *matHeaderCellDef>Total</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.total | currency }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="paymentType">
+      <th mat-header-cell *matHeaderCellDef>Payment Type</th>
+      <td mat-cell *matCellDef="let expense">{{ expense.paymentType }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="fileUrl">
+  <th mat-header-cell *matHeaderCellDef>File</th>
+  <td mat-cell *matCellDef="let expense">
+    <button mat-button class="dark-button" (click)="openImagePreview(expense.fileUrl)">
+      {{ expense.fileUrl }}
+    </button>
+  </td>
+</ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let expense">
+        <button mat-button (click)="editExpense(expense)">Edit</button>
+        <button mat-button (click)="confirmDelete(expense)">Delete</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+

@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
         scanEmail: false,
       };
     this.store
-      .dispatch(new Login(user)) //this.authService.login(user)
+      .dispatch(new Login(user)) 
       .subscribe(
         (data) => {
           this.router.navigate([this.authService.HOME_PATH]);

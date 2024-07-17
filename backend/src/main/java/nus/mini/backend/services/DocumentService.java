@@ -16,11 +16,13 @@ import nus.mini.backend.models.ReceiptImage;
 import nus.mini.backend.mongodbrepositories.MongoDBRepository;
 import nus.mini.backend.mongodbrepositories.ReceiptImgRepo;
 
-//Service class to interact with MongoDBRepository
+//serving MongoDB-realted services
 @Service
 public class DocumentService {
+     
     @Autowired
     private MongoDBRepository mongoRepo;
+
 
     @Autowired
     private ReceiptImgRepo receiptImgRepo;
@@ -30,7 +32,7 @@ public class DocumentService {
                 String contentType, byte[] content) {
         try{ 
             ObjectId imgId= mongoRepo.saveReceiptImgTemp(fileName, contentType, content);
-         //   System.out.println("imgId: "+imgId);
+            System.out.println("DocumentService >>> imgId: "+imgId);
             ReceiptImage rpImg= ReceiptImage.builder()
                             ._id(imgId)
                             .user_id(userId)
@@ -56,6 +58,7 @@ public class DocumentService {
         return mongoRepo.getContentType(fileName);
     }
 
+ 
     public MonthlyStatement saveMonthlyStatement(MonthlyStatement stmt){
         return mongoRepo.save(stmt);
     }

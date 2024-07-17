@@ -1,16 +1,15 @@
+<h2>Expenses by Category</h2>
 <mat-tab-group>
   <mat-tab label={{charMon}}>
-    <v3reports-tab [year]="currentMonth"></v3reports-tab>
+    <v3reports-tab [month]="currentMonth"></v3reports-tab>
   </mat-tab>
   <mat-tab label={{charL1Mon}}>
-    <v3reports-tab [year]="last1Month"></v3reports-tab>
+    <v3reports-tab [month]="last1Month"></v3reports-tab>
   </mat-tab>
   <mat-tab label={{charL2Mon}}>
-    <v3reports-tab [year]="last2Month"></v3reports-tab>
+    <v3reports-tab [month]="last2Month"></v3reports-tab>
   </mat-tab>
   <mat-tab label="ALL">
-    <v3reports-tab [year]="all"></v3reports-tab>
+    <v3reports-tab [month]=0></v3reports-tab>
   </mat-tab>
 </mat-tab-group>
-
-<button mat-raised-button (click)="generatePDF()">Generate PDF</button>

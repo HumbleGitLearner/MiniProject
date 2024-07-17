@@ -1,6 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
+import { config } from 'app/services/config';
+import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
+import { Expense } from 'app/models/expense';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'v3reports-tab',
@@ -8,75 +13,37 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrl: './v3reports-tab.component.css',
 })
 export class v3ReportTabComponent implements OnInit {
-  @Input() year!: number;
+  @Input() month!: number;
+  uid: number = 0;
+  alldata: Expense[] = [];
   barChartData: any[] = [];
-  pieChartData: any[] = [];
   colorScheme = { domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'] };
-  selectedMonth!: string;
-  months = [
-    { value: '01', viewValue: 'January' },
-    { value: '02', viewValue: 'February' },
-    { value: '03', viewValue: 'March' },
-    { value: '04', viewValue: 'April' },
-    { value: '05', viewValue: 'May' },
-    { value: '06', viewValue: 'June' },
-    { value: '07', viewValue: 'July' },
-    { value: '08', viewValue: 'August' },
-    { value: '09', viewValue: 'September' },
-    { value: '10', viewValue: 'October' },
-    { value: '11', viewValue: 'November' },
-    { value: '12', viewValue: 'December' },
-  ];
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<Expense>([]);
   totalTransactions = 0;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: JwtAuthStrategy) {}
 
   ngOnInit(): void {
-    this.loadExpenses();
+    this.auth.getCurrentUser().subscribe((user) => {
+      if (user) {
+        this.uid = user.pemToken;
+        this.loadExpenses();
+      }
+    });
   }
 
   loadExpenses(): void {
     this.http
-      .get(`/api/expenses/user/1`)
+      .get(`${config['expensesUrl']}/user/${this.uid}`)
       .subscribe((data: any) => {
-        // Assuming data is an array of expenses, group by month for bar chart
-        this.barChartData = this.groupExpensesByMonth(data);
+        this.alldata = data;
+        const filteredExpenses = this.filterExpensesByMonth(data, this.month);
+        this.barChartData = this.groupExpensesByCategory(filteredExpenses);
+        this.dataSource.data = filteredExpenses;
       });
   }
 
-  groupExpensesByMonth(data: any[]): any[] {
-    // Process data to get total expenses per month
-    const monthlyExpenses: any[] = [];
-    // Initialize months
-    for (let i = 1; i <= 12; i++) {
-      monthlyExpenses.push({ name: this.months[i - 1].viewValue, value: 0 });
-    }
-    // Aggregate expenses
-    data.forEach((expense) => {
-      const month = new Date(expense.trxTime).getMonth(); // 0-based month index
-      monthlyExpenses[month].value += expense.total;
-    });
-    return monthlyExpenses;
-  }
-
-  onMonthChange(event: any): void {
-    this.loadMonthlyExpenses(event.value);
-  }
-
-  loadMonthlyExpenses(month: string): void {
-    this.http
-      .get(
-        `/api/expenses/user/1`
-      )
-      .subscribe((data: any) => {
-        // Assuming data is an array of expenses for the selected month, group by category for pie chart
-        this.pieChartData = this.groupExpensesByCategory(data);
-      });
-  }
-
-  groupExpensesByCategory(data: any[]): any[] {
-    // Process data to get total expenses by category
+  groupExpensesByCategory(data: Expense[]): any[] {
     const categoryExpenses: any[] = [];
     data.forEach((expense) => {
       let category = categoryExpenses.find(
@@ -91,18 +58,58 @@ export class v3ReportTabComponent implements OnInit {
     return categoryExpenses;
   }
 
+  filterExpensesByMonth(data: Expense[], month: number): Expense[] {
+    return data.filter((expense) => {
+      if (!expense.trxTime) {
+        return false;
+      }
+      const expenseDate = new Date(expense.trxTime);
+      return expenseDate.getMonth() + 1 === month || month === 0;
+    });
+  }
+
   onPageChange(event: any): void {
     this.loadTransactions(event.pageIndex, event.pageSize);
   }
 
   loadTransactions(pageIndex: number, pageSize: number): void {
-    this.http
-      .get(
-        `/api/expenses/user/1`
-      )
-      .subscribe((data: any) => {
-        this.dataSource.data = data.transactions;
-        this.totalTransactions = data.total;
-      });
+    const apiUrl = `${config['expensesUrl']}/user/${this.uid}`;
+    this.http.get(`/api/expenses/user/1`).subscribe((data: any) => {
+      this.dataSource.data = data.transactions;
+      this.totalTransactions = data.total;
+    });
+  }
+
+  generatePDF(): void {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Expenses Report', 10, 10);
+
+    const tableColumn = [
+      'Transaction Date',
+      'Merchant',
+      'Category',
+      'Total',
+      'Payment Type',
+    ];
+    const tableRows: any[] = [];
+
+    this.dataSource.data.forEach((expense) => {
+      const expenseData = [
+        expense.trxTime, 
+        expense.merchant,
+        expense.category,
+        expense.total!.toFixed(2), 
+        expense.paymentType,
+      ];
+      tableRows.push(expenseData);
+    });
+
+    (doc as any).autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+    doc.save('expenses-report.pdf');
   }
 }
