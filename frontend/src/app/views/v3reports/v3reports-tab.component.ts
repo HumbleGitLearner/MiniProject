@@ -6,6 +6,8 @@ import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
 import { Expense } from 'app/models/expense';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import { Store } from '@ngxs/store';
+import { AuthState } from 'app/auth/states/stores/auth.state';
 
 @Component({
   selector: 'v3reports-tab',
@@ -21,12 +23,16 @@ export class v3ReportTabComponent implements OnInit {
   dataSource = new MatTableDataSource<Expense>([]);
   totalTransactions = 0;
 
-  constructor(private http: HttpClient, private auth: JwtAuthStrategy) {}
+  constructor(
+    private http: HttpClient,
+    private auth: JwtAuthStrategy,
+    private store: Store
+  ) {}
 
   ngOnInit(): void {
-    this.auth.getCurrentUser().subscribe((user) => {
+    this.store.select(AuthState.getUid).subscribe((user) => {
       if (user) {
-        this.uid = user.pemToken;
+        this.uid = Number(user);
         this.loadExpenses();
       }
     });
@@ -96,10 +102,10 @@ export class v3ReportTabComponent implements OnInit {
 
     this.dataSource.data.forEach((expense) => {
       const expenseData = [
-        expense.trxTime, 
+        expense.trxTime,
         expense.merchant,
         expense.category,
-        expense.total!.toFixed(2), 
+        expense.total!.toFixed(2),
         expense.paymentType,
       ];
       tableRows.push(expenseData);

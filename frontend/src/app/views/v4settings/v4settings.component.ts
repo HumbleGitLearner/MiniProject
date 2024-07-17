@@ -5,6 +5,9 @@ import { Router } from '@angular/router';
 import { CustomValidators } from '../../services/custom-validator';
 import { MatDialog } from '@angular/material/dialog';
 import { cDialogBoxComponent } from '../../services/cdialog.component';
+import { Store } from '@ngxs/store';
+import { AuthState } from 'app/auth/states/stores/auth.state';
+
 
 @Component({
   selector: 'v4settings',
@@ -71,7 +74,7 @@ export class V4SettingsComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe((result: boolean) => {
           if (result) {
-            this.router.navigate(['/app/home']);
+            this.router.navigate(['home']);
           }
         });
       }
@@ -90,7 +93,7 @@ export class V4SettingsComponent implements OnInit {
             });
             dialogRef.afterClosed().subscribe((result: boolean) => {
               if (result) {
-                this.router.navigate(['/app/home']);
+                this.router.navigate(['home']);
               }
             });        
         },
@@ -102,7 +105,7 @@ export class V4SettingsComponent implements OnInit {
           });
           dialogRef.afterClosed().subscribe((result: boolean) => {
             if (result) {
-              this.router.navigate(['/app/home']);
+              this.router.navigate(['home']);
             }
           });
         }

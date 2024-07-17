@@ -6,6 +6,7 @@ import {
   Pipe,
   PipeTransform,
 } from '@angular/core';
+
 import { Camera, CameraResultType } from '@capacitor/camera';
 import {
   AbstractControl,
@@ -28,6 +29,8 @@ import {
   greaterThanZeroValidator,
 } from '../../services/custom-validator';
 import { config } from 'app/services/config';
+import { Store } from '@ngxs/store';
+import { AuthState } from 'app/auth/states/stores/auth.state';
 
 @Component({
   selector: 'camera-upload',
@@ -80,16 +83,17 @@ export class V2CameraComponent implements OnInit {
     private ExpenseServices: ExpenseServices,
     private auth: JwtAuthStrategy,
     private dialog: MatDialog,
-    private router: Router
-  ) {
-    this.auth.getCurrentUser().subscribe((user) => {
-      if (user) {
-        this.uid = user.pemToken;
-      }
-    });
-  }
+    private router: Router,
+    private store: Store  
+  ) { }
 
   ngOnInit(): void {
+    this.store.select(AuthState.getUid).subscribe
+      ((user) => {
+        if (user) {
+          this.uid = Number(user);
+        }
+      })
     this.startCamera();
     this.expenseForm = this.formBuilder.group({
       userId: [this.uid, Validators.required],
@@ -197,7 +201,7 @@ export class V2CameraComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe((result: boolean) => {
           if (result) {
-            this.router.navigate(['/app/home']);
+            this.router.navigate(['home']);
           }
         });
       },
@@ -224,7 +228,7 @@ export class V2CameraComponent implements OnInit {
             });
             dialogRef.afterClosed().subscribe((result: boolean) => {
               if (result) {
-                this.router.navigate(['/app/home']);
+                this.router.navigate(['home']);
               }
             });
           },
@@ -233,9 +237,9 @@ export class V2CameraComponent implements OnInit {
         this.ExpenseServices.addExpense(expense).subscribe({
           next: (response) => {
             console.log('Expense added successfully', response);
-            this.auth.getCurrentUser().subscribe((user) => {
+            this.store.select(AuthState.getUid).subscribe((user) => {
               if (user) {
-                this.uid = user.pemToken;
+                this.uid = Number(user);
               }
             });
             this.resetForm();
@@ -249,7 +253,7 @@ export class V2CameraComponent implements OnInit {
             });
             dialogRef.afterClosed().subscribe((result: boolean) => {
               if (result) {
-                this.router.navigate(['/app/home']);
+                this.router.navigate(['home']);
               }
             });
           },

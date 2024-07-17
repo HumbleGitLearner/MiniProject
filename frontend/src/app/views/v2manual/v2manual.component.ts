@@ -10,6 +10,8 @@ import {
   lessThanToday,
   greaterThanZeroValidator,
 } from '../../services/custom-validator';
+import { AuthState } from 'app/auth/states/stores/auth.state';
+import { Store } from '@ngxs/store';
 
 @Component({
   selector: 'v2manual',
@@ -52,21 +54,22 @@ export class V2ManualComponent implements OnInit {
     'actions',
   ];
 
-    constructor(
+  constructor(
     private formBuilder: FormBuilder,
     private expenseService: ExpenseServices,
     private dialog: MatDialog,
     private router: Router,
-    private auth: JwtAuthStrategy
-  ) {
-    this.auth.getCurrentUser().subscribe((user) => {
-      if (user) {
-        this.uid = user.pemToken;
-      }
-    });
-  }
+    private auth: JwtAuthStrategy,
+    private store: Store
+  ) {}
 
   ngOnInit(): void {
+    this.store.select(AuthState.getUid).subscribe((user) => {
+      if (user) {
+        this.uid = Number(user);
+      }
+    });
+
     this.expenseForm = this.formBuilder.group({
       userId: [this.uid, Validators.required],
       fileUrl: [''],
@@ -95,7 +98,7 @@ export class V2ManualComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe((result: boolean) => {
           if (result) {
-            this.router.navigate(['/app/home']);
+            this.router.navigate(['home']);
           }
         });
       },
@@ -122,7 +125,7 @@ export class V2ManualComponent implements OnInit {
             });
             dialogRef.afterClosed().subscribe((result: boolean) => {
               if (result) {
-                this.router.navigate(['/app/home']);
+                this.router.navigate(['home']);
               }
             });
           },
@@ -131,9 +134,9 @@ export class V2ManualComponent implements OnInit {
         this.expenseService.addExpense(expense).subscribe({
           next: (response) => {
             console.log('Expense added successfully', response);
-            this.auth.getCurrentUser().subscribe((user) => {
+            this.store.select(AuthState.getUid).subscribe((user) => {
               if (user) {
-                this.uid = user.pemToken;
+                this.uid = Number(user);
               }
             });
             this.resetForm();
@@ -147,7 +150,7 @@ export class V2ManualComponent implements OnInit {
             });
             dialogRef.afterClosed().subscribe((result: boolean) => {
               if (result) {
-                this.router.navigate(['/app/home']);
+                this.router.navigate(['home']);
               }
             });
           },

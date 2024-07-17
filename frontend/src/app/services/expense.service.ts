@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
 import { config } from './config';
 import { Expense } from '../models/expense';
 import { MatDialog } from '@angular/material/dialog';
 import { Pipe, PipeTransform } from '@angular/core';
+import { Store } from '@ngxs/store';
+import { AuthState } from 'app/auth/states/stores/auth.state';
 
 @Pipe({
   name: 'filterEmptyFileUrl',
@@ -26,13 +28,14 @@ export class ExpenseServices {
   constructor(
     private http: HttpClient,
     private auth: JwtAuthStrategy,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private store: Store  
   ) {}
 
   addExpense(expense: Expense): Observable<Expense> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.auth.getCurrentUser().pipe(
-      switchMap((user) => {
+    return this.store.select(AuthState.getUid).pipe(
+      switchMap((uid) => {
         return this.http.post<Expense>(
           `${config['expensesUrl']}/add`,
           expense,
@@ -43,13 +46,17 @@ export class ExpenseServices {
   }
 
   getRecentExpenses(): Observable<Expense[]> {
-    return this.auth.getCurrentUser().pipe(
-      switchMap((user) => {
-        return this.http.get<Expense[]>(
-          `${config['expensesUrl']}/user/${user.pemToken}/limit?limit=25`
-        );
+    return this.store.select(AuthState.getUid).pipe(
+      switchMap((uid) => {
+        if (uid) {
+          return this.http.get<Expense[]>(
+            `${config['expensesUrl']}/user/${uid}/limit?limit=25`
+          );
+        } else {
+          return of([]); 
+        }
       })
-    );
+    )  
   }
 
   deleteExpense(tid: number): Observable<any> {

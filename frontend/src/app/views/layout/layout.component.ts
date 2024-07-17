@@ -92,7 +92,6 @@ export class LayoutComponent implements AfterViewInit {
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.store.dispatch(new Logout()).subscribe(() => {
-          console.error('logout =====');
           this.router.navigate([this.authService.LOGIN_PATH]);
         });
       }

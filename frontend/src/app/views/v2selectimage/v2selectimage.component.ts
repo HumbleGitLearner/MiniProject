@@ -8,6 +8,8 @@ import { Expense, CatType, PmtsType } from '../../models/expense';
 import { Router } from '@angular/router';
 import { config } from 'app/services/config';
 import { ImageDialogBoxComponent } from 'app/services/imagedialog.component';
+import { Store } from '@ngxs/store';
+import { AuthState } from 'app/auth/states/stores/auth.state';
 
 @Component({
   selector: 'app-v2selectimage',
@@ -60,7 +62,8 @@ export class V2SelectimageComponent implements OnInit {
     private ExpenseServices: ExpenseServices,
     private auth: JwtAuthStrategy,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private store: Store
   ) {
     this.imageForm = this.fb.group({
       category: [''],
@@ -69,14 +72,14 @@ export class V2SelectimageComponent implements OnInit {
       date: [''],
       paymentType: [''],
     });
-    this.auth.getCurrentUser().subscribe((user) => {
-      if (user) {
-        this.uid = user.pemToken;
-      }
-    });
   }
 
   ngOnInit(): void {
+    this.store.select(AuthState.getUid).subscribe((user) => {
+      if (user) {
+        this.uid = Number(user)
+      }
+    })
     this.loadRecentExpenses();
   }
 
@@ -114,7 +117,10 @@ export class V2SelectimageComponent implements OnInit {
         next: (response) => {
           this.dialog.open(cDialogBoxComponent, {
             data: {
-              message: ['Select Upload Image', `${imageName} : Image uploaded successfully`],
+              message: [
+                'Select Upload Image',
+                `${imageName} : Image uploaded successfully`,
+              ],
             },
           });
           this.loadRecentExpenses();
@@ -146,7 +152,7 @@ export class V2SelectimageComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe((result: boolean) => {
           if (result) {
-            this.router.navigate(['/app/home']);
+            this.router.navigate(['home']);
           }
         });
       },
@@ -173,7 +179,7 @@ export class V2SelectimageComponent implements OnInit {
             });
             dialogRef.afterClosed().subscribe((result: boolean) => {
               if (result) {
-                this.router.navigate(['/app/home']);
+                this.router.navigate(['home']);
               }
             });
           },
@@ -182,9 +188,9 @@ export class V2SelectimageComponent implements OnInit {
         this.ExpenseServices.addExpense(expense).subscribe({
           next: (response) => {
             console.log('Expense added successfully', response);
-            this.auth.getCurrentUser().subscribe((user) => {
+            this.store.select(AuthState.getUid).subscribe((user) => {
               if (user) {
-                this.uid = user.pemToken;
+                this.uid = Number(user);
               }
             });
             this.resetForm();
@@ -198,7 +204,7 @@ export class V2SelectimageComponent implements OnInit {
             });
             dialogRef.afterClosed().subscribe((result: boolean) => {
               if (result) {
-                this.router.navigate(['/app/home']);
+                this.router.navigate(['home']);
               }
             });
           },

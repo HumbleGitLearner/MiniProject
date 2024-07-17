@@ -38,8 +38,8 @@ COPY backend/src src
 # Copy ng build angular file from stage=ngbuild at <frontend> workdir to static in /giphy SB
 # reminder to delete the static file copied from angular before build
 #COPY --from=ngbuild /client/dist/frontend/browser/ src/main/resources/static
-#COPY --from=ngbuild /frontend/dist/client/ src/main/resources/static
-COPY --from=ngbuild /frontend/dist/ src/main/resources/static
+COPY --from=ngbuild /frontend/dist/client/ src/main/resources/static
+#COPY --from=ngbuild /frontend/dist/ src/main/resources/static
 
 # Generate target/server-0.0.1-SNAPSHOT.jar
 RUN chmod a+x mvnw

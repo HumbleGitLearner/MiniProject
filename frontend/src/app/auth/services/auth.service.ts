@@ -8,6 +8,7 @@ import { CacheService } from 'app/services/cache.service';
 import { config } from 'app/services/config';
 import { Store } from '@ngxs/store';
 import { Logout } from '../states/actions/auth.actions';
+import { AuthState } from 'app/auth/states/stores/auth.state';
 
 @Injectable({
   providedIn: 'root',
@@ -55,10 +56,10 @@ export class AuthService {
   }
 
   logout() {
-    return this.auth.getCurrentUser().pipe(
+    return this.store.select(AuthState.getUid).pipe(
       switchMap((user) => {
         return this.http
-          .get<any>(`${config['usersUrl']}/logout?id=${user.pemToken}`)
+          .get<any>(`${config['usersUrl']}/logout?id=${user}`)
           .pipe(tap(() => this.doLogoutUser()));
       }),
       catchError(() => of(false))
