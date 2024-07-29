@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { JwtAuthStrategy } from 'app/auth/services/jwt-auth.strategy';
 import { ExpenseServices } from '../../services/expense.service';
@@ -10,18 +10,29 @@ import { config } from 'app/services/config';
 import { ImageDialogBoxComponent } from 'app/services/imagedialog.component';
 import { Store } from '@ngxs/store';
 import { AuthState } from 'app/auth/states/stores/auth.state';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-v2selectimage',
   templateUrl: './v2selectimage.component.html',
   styleUrls: ['./v2selectimage.component.css'],
 })
-export class V2SelectimageComponent implements OnInit {
+export class V2SelectimageComponent implements OnInit, OnDestroy {
   imageForm: FormGroup;
   selectedFile: File | null = null;
   photoPreview: string | ArrayBuffer | null = null;
   uid: number = 0;
   today = new Date();
+  private mySubscription1!: Subscription;
+  private mySubscription2!: Subscription;
+  private mySubscription3!: Subscription;
+  private mySubscription4!: Subscription;
+  private mySubscription5!: Subscription;
+  private mySubscription6!: Subscription;
+  private mySubscription7!: Subscription;
+  private mySubscription8!: Subscription;
+  private mySubscription9!: Subscription;
+  private mySubscription10!: Subscription;
 
   expenseForm!: FormGroup;
   recentExpenses: Expense[] = [];
@@ -75,11 +86,13 @@ export class V2SelectimageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.select(AuthState.getUid).subscribe((user) => {
-      if (user) {
-        this.uid = Number(user)
-      }
-    })
+    this.mySubscription1 = this.store
+      .select(AuthState.getUid)
+      .subscribe((user) => {
+        if (user) {
+          this.uid = Number(user);
+        }
+      });
     this.loadRecentExpenses();
   }
 
@@ -113,7 +126,10 @@ export class V2SelectimageComponent implements OnInit {
       // formData.append('date', this.imageForm.get('date')?.value);
       // formData.append('paymentType', this.imageForm.get('paymentType')?.value);
 
-      this.ExpenseServices.seluploadImage(formData, this.uid).subscribe({
+      this.mySubscription2 = this.ExpenseServices.seluploadImage(
+        formData,
+        this.uid
+      ).subscribe({
         next: (response) => {
           this.dialog.open(cDialogBoxComponent, {
             data: {
@@ -140,7 +156,7 @@ export class V2SelectimageComponent implements OnInit {
   }
 
   loadRecentExpenses() {
-    this.ExpenseServices.getRecentExpenses().subscribe({
+    this.mySubscription3 = this.ExpenseServices.getRecentExpenses().subscribe({
       next: (expenses) => {
         this.recentExpenses = expenses.slice(0, 25);
       },
@@ -150,11 +166,13 @@ export class V2SelectimageComponent implements OnInit {
             message: ['Add Expense', `Error loading recent expenses: ${error}`],
           },
         });
-        dialogRef.afterClosed().subscribe((result: boolean) => {
-          if (result) {
-            this.router.navigate(['home']);
-          }
-        });
+        this.mySubscription4 = dialogRef
+          .afterClosed()
+          .subscribe((result: boolean) => {
+            if (result) {
+              this.router.navigate(['home']);
+            }
+          });
       },
     });
   }
@@ -165,7 +183,9 @@ export class V2SelectimageComponent implements OnInit {
 
       if (this.currentExpenseId !== null) {
         expense.id = this.currentExpenseId;
-        this.ExpenseServices.updateExpense(expense).subscribe({
+        this.mySubscription5 = this.ExpenseServices.updateExpense(
+          expense
+        ).subscribe({
           next: (response) => {
             console.log('Expense updated successfully', response);
             this.resetForm();
@@ -177,22 +197,28 @@ export class V2SelectimageComponent implements OnInit {
                 message: ['Edit Expense', `Error updating expense: ${error}`],
               },
             });
-            dialogRef.afterClosed().subscribe((result: boolean) => {
-              if (result) {
-                this.router.navigate(['home']);
-              }
-            });
+            this.mySubscription6 = dialogRef
+              .afterClosed()
+              .subscribe((result: boolean) => {
+                if (result) {
+                  this.router.navigate(['home']);
+                }
+              });
           },
         });
       } else {
-        this.ExpenseServices.addExpense(expense).subscribe({
+        this.mySubscription7 = this.ExpenseServices.addExpense(
+          expense
+        ).subscribe({
           next: (response) => {
             console.log('Expense added successfully', response);
-            this.store.select(AuthState.getUid).subscribe((user) => {
-              if (user) {
-                this.uid = Number(user);
-              }
-            });
+            this.mySubscription8 = this.store
+              .select(AuthState.getUid)
+              .subscribe((user) => {
+                if (user) {
+                  this.uid = Number(user);
+                }
+              });
             this.resetForm();
             this.loadRecentExpenses();
           },
@@ -237,7 +263,9 @@ export class V2SelectimageComponent implements OnInit {
   }
 
   deleteExpense(expense: Expense) {
-    this.ExpenseServices.deleteExpense(expense.id!).subscribe({
+    this.mySubscription9 = this.ExpenseServices.deleteExpense(
+      expense.id!
+    ).subscribe({
       next: () => {
         console.log('Expense deleted successfully');
         this.loadRecentExpenses();
@@ -269,12 +297,45 @@ export class V2SelectimageComponent implements OnInit {
       data: { imageBlob: imageblob },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    this.mySubscription10 = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         console.log('Dialog closed with success');
       } else {
         console.log('Dialog closed with error');
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.mySubscription1) {
+      this.mySubscription1.unsubscribe();
+    }
+        if (this.mySubscription2) {
+          this.mySubscription2.unsubscribe();
+        }
+    if (this.mySubscription3) {
+      this.mySubscription3.unsubscribe();
+    }
+    if (this.mySubscription4) {
+      this.mySubscription4.unsubscribe();
+    }
+    if (this.mySubscription5) {
+      this.mySubscription5.unsubscribe();
+    }
+    if (this.mySubscription6) {
+      this.mySubscription6.unsubscribe();
+    }
+    if (this.mySubscription7) {
+      this.mySubscription7.unsubscribe();
+    }
+    if (this.mySubscription8) {
+      this.mySubscription8.unsubscribe();
+    }
+    if (this.mySubscription9) {
+      this.mySubscription9.unsubscribe();
+    }
+    if (this.mySubscription10) {
+      this.mySubscription10.unsubscribe();
+    }
   }
 }

@@ -12,6 +12,7 @@
           "meta[name=theme-color]"
         ]
       }
-    ]
+    ],
+    "button-type": "off"
   }
 }

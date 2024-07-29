@@ -5,6 +5,7 @@ import {
   ViewChild,
   Pipe,
   PipeTransform,
+  OnDestroy,
 } from '@angular/core';
 
 import { Camera, CameraResultType } from '@capacitor/camera';
@@ -31,17 +32,32 @@ import {
 import { config } from 'app/services/config';
 import { Store } from '@ngxs/store';
 import { AuthState } from 'app/auth/states/stores/auth.state';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'camera-upload',
   templateUrl: './v2camera.component.html',
   styleUrls: ['./v2camera.component.css'],
 })
-export class V2CameraComponent implements OnInit {
+export class V2CameraComponent implements OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   photo: string | null | undefined = null;
+  selectedCamera: string = '';
+  cameras: MediaDeviceInfo[] = [];
   uid: number = 0;
   today = new Date();
+  private mySubscription1!: Subscription;
+  private mySubscription2!: Subscription;
+  private mySubscription3!: Subscription;
+  private mySubscription4!: Subscription;
+  private mySubscription5!: Subscription;
+  private mySubscription6!: Subscription;
+  private mySubscription7!: Subscription;
+  private mySubscription8!: Subscription;
+  private mySubscription9!: Subscription;
+  private mySubscription10!: Subscription;
+  private mySubscription11!: Subscription;
+  private mySubscription12!: Subscription;
 
   expenseForm!: FormGroup;
   recentExpenses: Expense[] = [];
@@ -84,17 +100,19 @@ export class V2CameraComponent implements OnInit {
     private auth: JwtAuthStrategy,
     private dialog: MatDialog,
     private router: Router,
-    private store: Store  
-  ) { }
+    private store: Store
+  ) {}
 
   ngOnInit(): void {
-    this.store.select(AuthState.getUid).subscribe
-      ((user) => {
+    this.mySubscription1 = this.store
+      .select(AuthState.getUid)
+      .subscribe((user) => {
         if (user) {
           this.uid = Number(user);
         }
-      })
-    this.startCamera();
+      });
+    this.getCameras();
+    // this.startCamera();
     this.expenseForm = this.formBuilder.group({
       userId: [this.uid, Validators.required],
       fileUrl: [''],
@@ -110,7 +128,16 @@ export class V2CameraComponent implements OnInit {
     this.loadRecentExpenses();
   }
 
-  async startCamera() {
+  async getCameras() {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    this.cameras = devices.filter((device) => device.kind === 'videoinput');
+    if (this.cameras.length > 0) {
+      this.selectedCamera = this.cameras[0].deviceId;
+      this.startCamera(this.selectedCamera);
+    }
+  }
+
+  async startCamera(deviceId: string) {
     if (Capacitor.isNativePlatform()) {
       // For mobile platforms
       const cameraResult = await Camera.getPhoto({
@@ -121,9 +148,13 @@ export class V2CameraComponent implements OnInit {
       this.photo = cameraResult.dataUrl;
     } else {
       // For web
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: deviceId } } });
       this.videoElement.nativeElement.srcObject = stream;
     }
+  }
+
+  switchCamera(deviceId: string) {
+    this.startCamera(deviceId);
   }
 
   async takePhoto() {
@@ -150,7 +181,7 @@ export class V2CameraComponent implements OnInit {
 
   retakePhoto() {
     this.photo = null;
-    this.startCamera();
+    this.startCamera(this.selectedCamera);
   }
 
   uploadPhoto() {
@@ -163,7 +194,7 @@ export class V2CameraComponent implements OnInit {
       const minutes = String(today.getMinutes()).padStart(2, '0');
       const seconds = String(today.getSeconds()).padStart(2, '0');
       const imageName = `${this.uid}_${year}${month}${day}${hours}${minutes}${seconds}.jpeg`;
-      this.ExpenseServices.camuploadImage(
+      this.mySubscription2 = this.ExpenseServices.camuploadImage(
         this.photo,
         this.uid,
         imageName
@@ -189,7 +220,7 @@ export class V2CameraComponent implements OnInit {
   }
 
   loadRecentExpenses() {
-    this.ExpenseServices.getRecentExpenses().subscribe({
+    this.mySubscription3 = this.ExpenseServices.getRecentExpenses().subscribe({
       next: (expenses) => {
         this.recentExpenses = expenses.slice(0, 25);
       },
@@ -199,11 +230,13 @@ export class V2CameraComponent implements OnInit {
             message: ['Add Expense', `Error loading recent expenses: ${error}`],
           },
         });
-        dialogRef.afterClosed().subscribe((result: boolean) => {
-          if (result) {
-            this.router.navigate(['home']);
-          }
-        });
+        this.mySubscription4 = dialogRef
+          .afterClosed()
+          .subscribe((result: boolean) => {
+            if (result) {
+              this.router.navigate(['home']);
+            }
+          });
       },
     });
   }
@@ -214,7 +247,9 @@ export class V2CameraComponent implements OnInit {
 
       if (this.currentExpenseId !== null) {
         expense.id = this.currentExpenseId;
-        this.ExpenseServices.updateExpense(expense).subscribe({
+        this.mySubscription5 = this.ExpenseServices.updateExpense(
+          expense
+        ).subscribe({
           next: (response) => {
             console.log('Expense updated successfully', response);
             this.resetForm();
@@ -226,22 +261,28 @@ export class V2CameraComponent implements OnInit {
                 message: ['Edit Expense', `Error updating expense: ${error}`],
               },
             });
-            dialogRef.afterClosed().subscribe((result: boolean) => {
-              if (result) {
-                this.router.navigate(['home']);
-              }
-            });
+            this.mySubscription6 = dialogRef
+              .afterClosed()
+              .subscribe((result: boolean) => {
+                if (result) {
+                  this.router.navigate(['home']);
+                }
+              });
           },
         });
       } else {
-        this.ExpenseServices.addExpense(expense).subscribe({
+        this.mySubscription7 = this.ExpenseServices.addExpense(
+          expense
+        ).subscribe({
           next: (response) => {
             console.log('Expense added successfully', response);
-            this.store.select(AuthState.getUid).subscribe((user) => {
-              if (user) {
-                this.uid = Number(user);
-              }
-            });
+            this.mySubscription8 = this.store
+              .select(AuthState.getUid)
+              .subscribe((user) => {
+                if (user) {
+                  this.uid = Number(user);
+                }
+              });
             this.resetForm();
             this.loadRecentExpenses();
           },
@@ -251,11 +292,13 @@ export class V2CameraComponent implements OnInit {
                 message: ['Add Expense', `Error adding expense: ${error}`],
               },
             });
-            dialogRef.afterClosed().subscribe((result: boolean) => {
-              if (result) {
-                this.router.navigate(['home']);
-              }
-            });
+            this.mySubscription9 = dialogRef
+              .afterClosed()
+              .subscribe((result: boolean) => {
+                if (result) {
+                  this.router.navigate(['home']);
+                }
+              });
           },
         });
       }
@@ -278,7 +321,7 @@ export class V2CameraComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    this.mySubscription10 = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.deleteExpense(expense);
       }
@@ -286,7 +329,9 @@ export class V2CameraComponent implements OnInit {
   }
 
   deleteExpense(expense: Expense) {
-    this.ExpenseServices.deleteExpense(expense.id!).subscribe({
+    this.mySubscription11 = this.ExpenseServices.deleteExpense(
+      expense.id!
+    ).subscribe({
       next: () => {
         console.log('Expense deleted successfully');
         this.loadRecentExpenses();
@@ -318,12 +363,51 @@ export class V2CameraComponent implements OnInit {
       data: { imageBlob: imageblob },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    this.mySubscription12 = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         console.log('Dialog closed with success');
       } else {
         console.log('Dialog closed with error');
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.mySubscription1) {
+      this.mySubscription1.unsubscribe();
+    }
+    if (this.mySubscription2) {
+      this.mySubscription2.unsubscribe();
+    }
+    if (this.mySubscription3) {
+      this.mySubscription3.unsubscribe();
+    }
+    if (this.mySubscription4) {
+      this.mySubscription4.unsubscribe();
+    }
+    if (this.mySubscription5) {
+      this.mySubscription5.unsubscribe();
+    }
+    if (this.mySubscription6) {
+      this.mySubscription6.unsubscribe();
+    }
+    if (this.mySubscription7) {
+      this.mySubscription7.unsubscribe();
+    }
+    if (this.mySubscription8) {
+      this.mySubscription8.unsubscribe();
+    }
+    if (this.mySubscription9) {
+      this.mySubscription9.unsubscribe();
+    }
+    if (this.mySubscription10) {
+      this.mySubscription10.unsubscribe();
+    }
+    if (this.mySubscription11) {
+      this.mySubscription11.unsubscribe();
+    }
+    if (this.mySubscription12) {
+      this.mySubscription12.unsubscribe();
+    }
   }
 }

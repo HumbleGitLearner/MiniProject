@@ -77,7 +77,7 @@ public class ReceiptRepository{
     public int save(@Valid Receipt receipt)throws DataAccessException, SQLException{
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(new PreparedStatementCreator(){
-            @SuppressWarnings("null")
+      //      @SuppressWarnings("null")
             @Override
             public PreparedStatement createPreparedStatement(@NonNull Connection con) throws SQLException{
                 PreparedStatement pst= con.prepareStatement(INSERT_RECEIPT, new String[]{"id"});
@@ -97,7 +97,7 @@ public class ReceiptRepository{
                 return pst;
             }
         }, keyHolder);
-      //  System.out.println("KeyHolder from ReceiptRepository: "+keyHolder.getKey());
+        System.out.println("KeyHolder from ReceiptRepository: "+keyHolder.getKey());
         Number key= keyHolder.getKey();
         if (key==null) return 0;
         return key.intValue();

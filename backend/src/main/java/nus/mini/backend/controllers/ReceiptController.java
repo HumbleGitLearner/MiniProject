@@ -3,7 +3,6 @@ package  nus.mini.backend.controllers;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,9 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.validation.Valid;
-import nus.mini.backend.models.EnumTypes;
 import nus.mini.backend.models.ReceiptDTO;
 import nus.mini.backend.services.DocumentService;
+import nus.mini.backend.services.ImgAIService;
 import nus.mini.backend.services.ReceiptService;
 
 
@@ -88,13 +87,14 @@ public class ReceiptController {
     @GetMapping("/download")
     public ResponseEntity<byte[]> downloadReceiptImg(@RequestParam("fileUrl") String fileUrl)
              throws DataAccessException, SQLException, IOException {
-      //  System.out.println("downloadReceiptImg >>> fileUrl: "+fileUrl);
+        System.out.println("downloadReceiptImg >>> fileUrl: "+fileUrl);
         byte[] content = docService.downloadReceipt(fileUrl);
         if (content == null) {
             return ResponseEntity.notFound().build();
         }
+        // String contentType = docService.getContentType(fileUrl);
         String contentType = docService.getContentType(fileUrl);
-      //  System.out.println("downloadReceiptImg >>> content: "+contentType);
+       System.out.println("downloadReceiptImg >>> content: "+contentType);
         if ((contentType == null)|| !MediaType.parseMediaType(contentType).isConcrete()) {
             contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
         }
@@ -139,6 +139,7 @@ public class ReceiptController {
                 @RequestParam("file") MultipartFile file , @PathVariable int userId) 
                 throws DataAccessException, SQLException, IOException {
         try{
+            System.out.println("Starting ReceiptController.uploadReceiptImg() >>> ");
             //upload the file to MongoDB and create a ReceiptImage document
             String filename= file.getOriginalFilename();
             String contentType = file.getContentType();
@@ -150,21 +151,22 @@ public class ReceiptController {
              //calling Document AI API to extract text from the image
              //and create a Receipt record in MySql
             System.out.println("uploadReceiptImg >>> docIdHex: "+docIdHex);
-           // int id= imgAIService.handleFileUpload(userId, filename, contentType, content);
-            ReceiptDTO receipt = ReceiptDTO.builder()
-                   .userId(userId)
-                   .fileUrl(filename)
-                   .uploadTime(LocalDateTime.now())
-                   .total(new BigDecimal(0.0))
-                   .trxTime(LocalDateTime.now())
-                   .category(EnumTypes.CatType.OTHER)
-                   .platform(EnumTypes.PltfmType.OTHER)
-                   .paymentType(EnumTypes.PmtsType.OTHER)
-                   .build();
-          //  System.out.println("UploadReceiptImg >>> receipt: "+receipt.toString());
-            int id = receiptService.save(receipt);
+            int id= imgAIService.handleFileUpload(userId, filename, contentType, content);
+            // ReceiptDTO receipt = ReceiptDTO.builder()
+            //        .userId(userId)
+            //        .fileUrl(filename)
+            //        .uploadTime(LocalDateTime.now())
+            //        .total(new BigDecimal(0.0))
+            //        .trxTime(LocalDateTime.now())
+            //        .category(EnumTypes.CatType.OTHER)
+            //        .platform(EnumTypes.PltfmType.OTHER)
+            //        .paymentType(EnumTypes.PmtsType.OTHER)
+            //        .build();
+          //  System.out.println("UploadReceiptDTO >>> receipt: "+receipt.toString());
+          //  int id = receiptService.save(receipt);
             return ResponseEntity.ok(id);
         } catch (Exception e) {
+            e.getStackTrace();//ToDo: log the error
             return ResponseEntity.internalServerError().build();
         }
     }

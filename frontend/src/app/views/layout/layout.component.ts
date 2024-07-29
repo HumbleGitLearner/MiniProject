@@ -2,6 +2,7 @@ import {
   Component,
   AfterViewInit,
   ChangeDetectorRef,
+  OnDestroy,
 } from "@angular/core";
 import {
   Router,
@@ -20,11 +21,12 @@ import { Logout } from "app/auth/states/actions/auth.actions";
   selector: 'layout',
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
-}) 
-export class LayoutComponent implements AfterViewInit {
+})
+export class LayoutComponent implements AfterViewInit, OnDestroy {
   public loadingRoute = false;
   public userEmail$: Observable<string | undefined>;
   public uId: number | undefined;
+  private mySubscription!: Subscription;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -34,7 +36,7 @@ export class LayoutComponent implements AfterViewInit {
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
     private dialog: MatDialog,
-    private store: Store
+    private store: Store,
   ) {
     iconRegistry.addSvgIcon(
       'home',
@@ -89,13 +91,20 @@ export class LayoutComponent implements AfterViewInit {
   logout() {
     const dialogRef = this.dialog.open(LogoutDialogComponent);
 
-    dialogRef.afterClosed().subscribe((result: boolean) => {
+    this.mySubscription = dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.store.dispatch(new Logout()).subscribe(() => {
           this.router.navigate([this.authService.LOGIN_PATH]);
         });
+        // window.location.reload();
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.mySubscription) {
+      this.mySubscription.unsubscribe();
+    }
   }
 
   ngAfterViewInit() {

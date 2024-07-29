@@ -6,6 +6,15 @@
   >
     <div class="left-side" fxFlex="100" fxFlex.md="50">
       <div class="camera-container">
+        <mat-form-field appearance="fill">
+          <mat-label>Camera</mat-label>
+          <mat-select [(value)]="selectedCamera" (selectionChange)="switchCamera($event.value)">
+            <mat-option *ngFor="let camera of cameras" [value]="camera.deviceId">
+              {{ camera.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <div class="camera-preview" *ngIf="!photo">
           <video #videoElement autoplay></video>
           <div class="focus-box"></div>

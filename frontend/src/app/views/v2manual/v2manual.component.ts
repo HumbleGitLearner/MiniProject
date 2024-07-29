@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Expense, CatType, PmtsType } from '../../models/expense';
 import { ExpenseServices } from '../../services/expense.service';
@@ -12,13 +12,14 @@ import {
 } from '../../services/custom-validator';
 import { AuthState } from 'app/auth/states/stores/auth.state';
 import { Store } from '@ngxs/store';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'v2manual',
   templateUrl: './v2manual.component.html',
   styleUrls: ['./v2manual.component.css'],
 })
-export class V2ManualComponent implements OnInit {
+export class V2ManualComponent implements OnInit, OnDestroy {
   expenseForm!: FormGroup;
   uid: number = 0;
   today = new Date();
@@ -53,6 +54,16 @@ export class V2ManualComponent implements OnInit {
     'paymentType',
     'actions',
   ];
+  private mySubscription1!: Subscription;
+  private mySubscription2!: Subscription;
+  private mySubscription3!: Subscription;
+  private mySubscription4!: Subscription;
+  private mySubscription5!: Subscription;
+  private mySubscription6!: Subscription;
+  private mySubscription7!: Subscription;
+  private mySubscription8!: Subscription;
+  private mySubscription9!: Subscription;
+  private mySubscription10!: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -64,11 +75,13 @@ export class V2ManualComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.store.select(AuthState.getUid).subscribe((user) => {
-      if (user) {
-        this.uid = Number(user);
-      }
-    });
+    this.mySubscription1 = this.store
+      .select(AuthState.getUid)
+      .subscribe((user) => {
+        if (user) {
+          this.uid = Number(user);
+        }
+      });
 
     this.expenseForm = this.formBuilder.group({
       userId: [this.uid, Validators.required],
@@ -86,7 +99,7 @@ export class V2ManualComponent implements OnInit {
   }
 
   loadRecentExpenses() {
-    this.expenseService.getRecentExpenses().subscribe({
+    this.mySubscription2 = this.expenseService.getRecentExpenses().subscribe({
       next: (expenses) => {
         this.recentExpenses = expenses.slice(0, 10);
       },
@@ -96,11 +109,13 @@ export class V2ManualComponent implements OnInit {
             message: ['Add Expense', `Error loading recent expenses: ${error}`],
           },
         });
-        dialogRef.afterClosed().subscribe((result: boolean) => {
-          if (result) {
-            this.router.navigate(['home']);
-          }
-        });
+        this.mySubscription3 = dialogRef
+          .afterClosed()
+          .subscribe((result: boolean) => {
+            if (result) {
+              this.router.navigate(['home']);
+            }
+          });
       },
     });
   }
@@ -111,50 +126,60 @@ export class V2ManualComponent implements OnInit {
 
       if (this.currentExpenseId !== null) {
         expense.id = this.currentExpenseId;
-        this.expenseService.updateExpense(expense).subscribe({
-          next: (response) => {
-            console.log('Expense updated successfully', response);
-            this.resetForm();
-            this.loadRecentExpenses();
-          },
-          error: (error) => {
-            const dialogRef = this.dialog.open(cDialogBoxComponent, {
-              data: {
-                message: ['Edit Expense', `Error updating expense: ${error}`],
-              },
-            });
-            dialogRef.afterClosed().subscribe((result: boolean) => {
-              if (result) {
-                this.router.navigate(['home']);
-              }
-            });
-          },
-        });
+        this.mySubscription4 = this.expenseService
+          .updateExpense(expense)
+          .subscribe({
+            next: (response) => {
+              console.log('Expense updated successfully', response);
+              this.resetForm();
+              this.loadRecentExpenses();
+            },
+            error: (error) => {
+              const dialogRef = this.dialog.open(cDialogBoxComponent, {
+                data: {
+                  message: ['Edit Expense', `Error updating expense: ${error}`],
+                },
+              });
+              this.mySubscription5 = dialogRef
+                .afterClosed()
+                .subscribe((result: boolean) => {
+                  if (result) {
+                    this.router.navigate(['home']);
+                  }
+                });
+            },
+          });
       } else {
-        this.expenseService.addExpense(expense).subscribe({
-          next: (response) => {
-            console.log('Expense added successfully', response);
-            this.store.select(AuthState.getUid).subscribe((user) => {
-              if (user) {
-                this.uid = Number(user);
-              }
-            });
-            this.resetForm();
-            this.loadRecentExpenses();
-          },
-          error: (error) => {
-            const dialogRef = this.dialog.open(cDialogBoxComponent, {
-              data: {
-                message: ['Add Expense', `Error adding expense: ${error}`],
-              },
-            });
-            dialogRef.afterClosed().subscribe((result: boolean) => {
-              if (result) {
-                this.router.navigate(['home']);
-              }
-            });
-          },
-        });
+        this.mySubscription6 = this.expenseService
+          .addExpense(expense)
+          .subscribe({
+            next: (response) => {
+              console.log('Expense added successfully', response);
+              this.mySubscription7 = this.store
+                .select(AuthState.getUid)
+                .subscribe((user) => {
+                  if (user) {
+                    this.uid = Number(user);
+                  }
+                });
+              this.resetForm();
+              this.loadRecentExpenses();
+            },
+            error: (error) => {
+              const dialogRef = this.dialog.open(cDialogBoxComponent, {
+                data: {
+                  message: ['Add Expense', `Error adding expense: ${error}`],
+                },
+              });
+              this.mySubscription8 = dialogRef
+                .afterClosed()
+                .subscribe((result: boolean) => {
+                  if (result) {
+                    this.router.navigate(['home']);
+                  }
+                });
+            },
+          });
       }
     }
   }
@@ -175,7 +200,7 @@ export class V2ManualComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    this.mySubscription9 = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.deleteExpense(expense);
       }
@@ -183,19 +208,21 @@ export class V2ManualComponent implements OnInit {
   }
 
   deleteExpense(expense: Expense) {
-    this.expenseService.deleteExpense(expense.id!).subscribe({
-      next: () => {
-        console.log('Expense deleted successfully');
-        this.loadRecentExpenses();
-      },
-      error: (error) => {
-        const dialogRef = this.dialog.open(cDialogBoxComponent, {
-          data: {
-            message: ['Delete Expense', `Error deleting expense: ${error}`],
-          },
-        });
-      },
-    });
+    this.mySubscription10 = this.expenseService
+      .deleteExpense(expense.id!)
+      .subscribe({
+        next: () => {
+          console.log('Expense deleted successfully');
+          this.loadRecentExpenses();
+        },
+        error: (error) => {
+          const dialogRef = this.dialog.open(cDialogBoxComponent, {
+            data: {
+              message: ['Delete Expense', `Error deleting expense: ${error}`],
+            },
+          });
+        },
+      });
   }
 
   resetForm() {
@@ -207,5 +234,39 @@ export class V2ManualComponent implements OnInit {
     this.expenseForm.get('category')?.setValue('OUTFOOD');
     this.expenseForm.get('platform')?.setValue('GRAB');
     this.expenseForm.get('paymentType')?.setValue('CREDIT');
+  }
+
+  ngOnDestroy() {
+    if (this.mySubscription1) {
+      this.mySubscription1.unsubscribe();
+    }
+    if (this.mySubscription2) {
+      this.mySubscription2.unsubscribe();
+    }
+    if (this.mySubscription3) {
+      this.mySubscription3.unsubscribe();
+    }
+    if (this.mySubscription4) {
+      this.mySubscription4.unsubscribe();
+    }
+    if (this.mySubscription5) {
+      this.mySubscription5.unsubscribe();
+    }
+    if (this.mySubscription6) {
+      this.mySubscription6.unsubscribe();
+    }
+    if (this.mySubscription7) {
+      this.mySubscription7.unsubscribe();
+    }
+    if (this.mySubscription8) {
+      this.mySubscription8.unsubscribe();
+    }
+    if (this.mySubscription9) {
+      this.mySubscription9.unsubscribe();
+    }
+    if (this.mySubscription10) {
+      this.mySubscription10.unsubscribe();
+    }
+
   }
 }

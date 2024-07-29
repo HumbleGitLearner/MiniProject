@@ -17,19 +17,39 @@ public class DateTimeParser {
             .toFormatter().withResolverStyle(ResolverStyle.STRICT),
         DateTimeFormatter.ISO_LOCAL_DATE,
         DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH),
-        DateTimeFormatter.ofPattern("dd MMM yy HH:mm Z", Locale.ENGLISH)
+        DateTimeFormatter.ofPattern("dd MMM yy HH:mm Z", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("MM-dd-yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("yyyy/MM/dd", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("dd/MM/yy", Locale.ENGLISH),
     };
 
     private static final DateTimeFormatter[] TIME_FORMATTERS = new DateTimeFormatter[]{
-        DateTimeFormatter.ofPattern("HH:mm Z", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH),  
+        DateTimeFormatter.ofPattern("H:mm"),
         DateTimeFormatter.ISO_LOCAL_TIME,
-        DateTimeFormatter.ofPattern("H:mm")
+        DateTimeFormatter.ofPattern("HH:mm Z", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("HH:mm:ss.SSS", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("h:mm:ss a", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("hh:mm:ss a", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("HH:mm:ss Z", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("HH:mm:ss.SSS Z", Locale.ENGLISH)
     };
 
 
     public static LocalDateTime parseDateTime(String date, String time) {
+        System.out.println("parseDateTime1: "+date+" "+time);
         LocalDate receiptDate = parseReceiptDate(date);
+        System.out.println("parseDateTime2: "+receiptDate.toString());
         LocalTime purchaseTime = parsePurchaseTime(time);
+        System.out.println("parseDateTime3: "+LocalDateTime.of(receiptDate, purchaseTime).toString());
         return LocalDateTime.of(receiptDate, purchaseTime);
     }
 
@@ -37,7 +57,9 @@ public class DateTimeParser {
     private static LocalDate parseReceiptDate(String dateStr) {
         for (DateTimeFormatter formatter : DATE_FORMATTERS) {
             try {
-                return LocalDate.parse(dateStr, formatter);
+                LocalDate date = LocalDate.parse(dateStr, formatter);
+                System.out.println("parseReceiptDate: " + date.toString());
+                return date;
             } catch (Exception ignored) {}
         }
         throw new IllegalArgumentException("Unknown date format: " + dateStr);
@@ -46,8 +68,10 @@ public class DateTimeParser {
     private static LocalTime parsePurchaseTime(String timeStr) {
         for (DateTimeFormatter formatter : TIME_FORMATTERS) {
             try {
-                return LocalTime.parse(timeStr, formatter);
-            } catch (Exception ignored) {}
+                LocalTime time = LocalTime.parse(timeStr, formatter);
+                System.out.println("parseReceiptTime: "+ time.toString());          
+                return time;
+            } catch (Exception ignored) { }
         }
         throw new IllegalArgumentException("Unknown time format: " + timeStr);
     }

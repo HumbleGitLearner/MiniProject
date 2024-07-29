@@ -13,7 +13,6 @@
               placeholder="Email"
               formControlName="email"
               required
-              [disabled]="true"
             />
           <mat-error *ngIf="editUserForm.controls['email'].touched && editUserForm.controls['email'].hasError('required')">Email is <strong>required</strong></mat-error>
           <mat-error *ngIf="editUserForm.controls['email'].touched && editUserForm.controls['email'].hasError('email')">Please enter a valid email address</mat-error>

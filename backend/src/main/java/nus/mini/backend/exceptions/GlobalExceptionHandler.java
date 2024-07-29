@@ -23,6 +23,18 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleUserNotFoundException(Exception ex) {
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+        StackTraceElement origin = stackTrace[0]; // The top of the stack trace is where the exception was thrown
+
+        String originInfo = String.format("Exception originated in method: %s.%s() at line %d",
+                origin.getClassName(), origin.getMethodName(), origin.getLineNumber());
+        logger.error("Exception: " + ex.getMessage(), ex);
+        logger.error(originInfo);
+        return new ResponseEntity<>("Exception: " + ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
   
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {

@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,33 +28,57 @@ public class DocumentService {
 
     //upload the file to MongoDB and create a ReceiptImage document
     public String saveReceiptImg(int userId, String fileName, 
-                String contentType, byte[] content) {
-        try{ 
-            ObjectId imgId= mongoRepo.saveReceiptImgTemp(fileName, contentType, content);
-            System.out.println("DocumentService >>> imgId: "+imgId);
-            ReceiptImage rpImg= ReceiptImage.builder()
-                            ._id(imgId)
-                            .user_id(userId)
-                            .file_name(fileName)
-                            .content_type(contentType)
-                            .data(content)
-                            .created_date(LocalDateTime.now())
-                            .build();
-            receiptImgRepo.save(rpImg);  
-            return imgId.toHexString();
-        }catch(IOException e){
-            return null;
-        }
-    }
+                String contentType, byte[] content) throws IOException{
+        // try{ 
+            // ObjectId imgId= mongoRepo.saveReceiptImgTemp(fileName, contentType, content);
+            // //ObjectId imgId = mongoRepo.saveReceiptImg(fileName, contentType, content);
+            // System.out.println("DocumentService >>> imgId: " + imgId);
+            // ReceiptImage rpImg = ReceiptImage.builder()
+            //                 ._id(imgId)
+            //                 .user_id(userId)
+            //                 .file_name(fileName)
+            //                 .content_type(contentType)
+            //                 .data(content)
+            //                 .created_date(LocalDateTime.now())
+            //                 .build();
+            // receiptImgRepo.save(rpImg);
+            System.out.println("DocumentService >>> userId: "+userId+"==="+"fileName: "+fileName+"==="+"contentType: "+contentType);
+            // ReceiptImage newImage = new ReceiptImage();
+            // newImage.setUser_id(userId);
+            // newImage.setFile_name(fileName);
+            // newImage.setContent_type(contentType);
+            // newImage.setCreated_date(LocalDateTime.now());
+            // newImage.setData(content);
+            // newImage = receiptImgRepo.insert(newImage);
+            ReceiptImage receiptImage = new ReceiptImage(userId, fileName, contentType, content, LocalDateTime.now());
+            receiptImgRepo.save(receiptImage);
+            return receiptImage.get_id().toHexString();   
+            // .get_id().toHexString();            
+//            return imgId.toHexString();
+            }; 
+            // catch (IOException e) {
+            // return null;
+            // }
+    // }
 
     public byte[] downloadReceipt(String fileName) throws IOException {
       //  System.out.println("DocService: downloadReceipt: "+fileName);
-        return mongoRepo.downloadReceipt(fileName);
+        // return mongoRepo.downloadReceipt(fileName);
+        ReceiptImage receiptImage = receiptImgRepo.findByFileName(fileName);
+        if (receiptImage == null) {
+            throw new IOException("Receipt not found for fileName: " + fileName);
+        }
+        return receiptImage.getData();
     }
 
     public String getContentType(String fileName) throws IOException {
       //  System.out.println("DocService: getContentType: "+fileName);
-        return mongoRepo.getContentType(fileName);
+        //return mongoRepo.getContentType(fileName);
+        ReceiptImage receiptImage = receiptImgRepo.findContentTypeByFileName(fileName);
+        if (receiptImage == null) {
+            throw new IOException("Receipt not found for fileName: " + fileName);
+        }
+        return receiptImage.getContent_type();
     }
 
  

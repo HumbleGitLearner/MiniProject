@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
 import { config } from 'app/services/config';
@@ -8,13 +8,14 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { Store } from '@ngxs/store';
 import { AuthState } from 'app/auth/states/stores/auth.state';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'v3reports-tab',
   templateUrl: './v3reports-tab.component.html',
   styleUrl: './v3reports-tab.component.css',
 })
-export class v3ReportTabComponent implements OnInit {
+export class v3ReportTabComponent implements OnInit, OnDestroy {
   @Input() month!: number;
   uid: number = 0;
   alldata: Expense[] = [];
@@ -22,7 +23,9 @@ export class v3ReportTabComponent implements OnInit {
   colorScheme = { domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'] };
   dataSource = new MatTableDataSource<Expense>([]);
   totalTransactions = 0;
-
+  private mySubscription1!: Subscription;
+  private mySubscription2!: Subscription;
+  private mySubscription3!: Subscription;
   constructor(
     private http: HttpClient,
     private auth: JwtAuthStrategy,
@@ -30,16 +33,18 @@ export class v3ReportTabComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.store.select(AuthState.getUid).subscribe((user) => {
-      if (user) {
-        this.uid = Number(user);
-        this.loadExpenses();
-      }
-    });
+    this.mySubscription1 = this.store
+      .select(AuthState.getUid)
+      .subscribe((user) => {
+        if (user) {
+          this.uid = Number(user);
+          this.loadExpenses();
+        }
+      });
   }
 
   loadExpenses(): void {
-    this.http
+    this.mySubscription2 = this.http
       .get(`${config['expensesUrl']}/user/${this.uid}`)
       .subscribe((data: any) => {
         this.alldata = data;
@@ -80,10 +85,12 @@ export class v3ReportTabComponent implements OnInit {
 
   loadTransactions(pageIndex: number, pageSize: number): void {
     const apiUrl = `${config['expensesUrl']}/user/${this.uid}`;
-    this.http.get(`/api/expenses/user/1`).subscribe((data: any) => {
-      this.dataSource.data = data.transactions;
-      this.totalTransactions = data.total;
-    });
+    this.mySubscription3 = this.http
+      .get(`/api/expenses/user/1`)
+      .subscribe((data: any) => {
+        this.dataSource.data = data.transactions;
+        this.totalTransactions = data.total;
+      });
   }
 
   generatePDF(): void {
@@ -117,5 +124,18 @@ export class v3ReportTabComponent implements OnInit {
       startY: 20,
     });
     doc.save('expenses-report.pdf');
+  }
+
+  ngOnDestroy() {
+    if (this.mySubscription1) {
+      this.mySubscription1.unsubscribe();
+    }
+        if (this.mySubscription2) {
+          this.mySubscription2.unsubscribe();
+    }
+        if (this.mySubscription3) {
+          this.mySubscription3.unsubscribe();
+    }
+    
   }
 }

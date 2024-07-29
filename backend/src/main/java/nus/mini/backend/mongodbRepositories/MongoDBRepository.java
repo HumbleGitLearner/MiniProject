@@ -42,7 +42,7 @@ public class MongoDBRepository {
 	private GridFSBucket gridFSBucket;
 
 	public ObjectId saveReceiptImg(String fileName, String contentType, 
-				byte[] content) throws Exception {
+				byte[] content) throws IOException {
 		try (InputStream is = new ByteArrayInputStream(content)){
 			GridFSUploadOptions options = new GridFSUploadOptions()
 					.metadata(new org.bson.Document("type", contentType));
@@ -82,9 +82,9 @@ public class MongoDBRepository {
 
 	public String getContentType(String name) {
         GridFSFile gridFSFile = gridFsTemplate.findOne(
-				Query.query(Criteria.where("filename").is(name)));
+				Query.query(Criteria.where("file_name").is(name)));
         if (gridFSFile != null && gridFSFile.getMetadata() != null) {
-            return gridFSFile.getMetadata().getString("_contentType");
+            return gridFSFile.getMetadata().getString("content_type");
         }
         return MediaType.APPLICATION_OCTET_STREAM_VALUE; // default if not found
     }
